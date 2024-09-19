@@ -162,5 +162,5 @@ cython_debug/
 
 
 ######### CUSTOM ENTRIES #########
-# don't track .lock files
-*.lock
+# don't track test.py file
+test.py
