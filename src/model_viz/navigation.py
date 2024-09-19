@@ -12,7 +12,7 @@ def get_filepath_set(dirs: list[str] | None = None, files: list[str] | None = No
 
     # declare set to store file paths
     filepaths = set()
-    
+
     # add files
     if files is not None:
         for file in files:
