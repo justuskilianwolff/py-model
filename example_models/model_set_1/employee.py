@@ -6,3 +6,6 @@ class Employee(Person):
         super().__init__(name, age)
         self.employee_id = employee_id
         self.salary = salary
+
+    def spend_salary(self, amount: float) -> None:
+        print(f"{self.name} is spending {amount} of their salary.")
