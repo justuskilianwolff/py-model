@@ -7,7 +7,7 @@ from .utils import indicate_access_level
 logger = get_logger(__name__)
 
 
-def print_function(function: ast.FunctionDef, parameters: bool = True, return_type: bool = True) -> str:
+def get_func_repr(function: ast.FunctionDef, parameters: bool = True, return_type: bool = True) -> str:
     """
     Return a string representation of a function.
 
@@ -48,12 +48,13 @@ def print_function(function: ast.FunctionDef, parameters: bool = True, return_ty
             function_str += f" -> {function.returns.id}"
         else:
             # TODO: Implement support for more return types (e.g. List, Dict, Tuple, etc.)
+            function_str += " -> not implemented"
             logger.warning(f"Unknown return type for function: {function.name}")
 
     return function_str
 
 
-def print_attribute(attribute: ast.AnnAssign | ast.Assign) -> str:
+def get_attr_repr(attribute: ast.AnnAssign | ast.Assign, type: bool = True) -> str:
     """
     Return a string representation of an attribute.
 
@@ -63,18 +64,17 @@ def print_attribute(attribute: ast.AnnAssign | ast.Assign) -> str:
     Returns:
         str: The string representation of the attribute.
     """
-    # Attribute name
-    if isinstance(attribute.target, ast.Name):
+    if isinstance(attribute, ast.Assign):
+        attribute_str = indicate_access_level(attribute.value.id)
+    elif isinstance(attribute, ast.AnnAssign):
         attribute_str = indicate_access_level(attribute.target.id)
+        if type:
+            if isinstance(attribute.annotation, ast.Name):
+                attribute_str += f": {attribute.annotation.id}"
+            else:
+                attribute_str += ": not implemented"
+                logger.warning(f"Unknown attribute type for attribute: {attribute.target.id}")
     else:
         raise NotImplementedError()
 
-    # Attribute type
-    if isinstance(attribute, ast.AnnAssign):
-        if isinstance(attribute.annotation, ast.Name):
-            attribute_str += f": {attribute.annotation.id}"
-        else:
-            logger.warning(f"Unknown attribute type for attribute: {attribute.target.id}")
-    else:
-        pass
     return attribute_str
