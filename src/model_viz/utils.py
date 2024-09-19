@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 
-from python_template.logging import get_logger
+from model_viz.logging import get_logger
 
 logger = get_logger(__name__)
 
@@ -52,7 +52,7 @@ def set_project_name(name: str) -> None:
     Set the project name for the files and in the file content to not manually change from the template.
     """
 
-    mapping = {"python-template": name, "python_template": name.replace("-", "_")}
+    mapping = {"model-viz": name, "model_viz": name.replace("-", "_")}
 
     dirs_to_remove = set()
 

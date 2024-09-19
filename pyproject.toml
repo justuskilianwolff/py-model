@@ -1,5 +1,5 @@
 [project]
-name = "python-template"
+name = "model-viz"
 version = "0.1.0"
 description = "Add your description here"
 authors = [
@@ -28,7 +28,7 @@ dev-dependencies = [
 allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/python_template"]
+packages = ["src/model_viz"]
 
 [tool.ruff]
 line-length = 120

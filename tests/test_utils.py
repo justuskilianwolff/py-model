@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from python_template.utils import get_env_variable
+from model_viz.utils import get_env_variable
 
 
 def test_get_not_set_env_variable():
