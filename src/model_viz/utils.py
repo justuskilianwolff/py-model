@@ -13,10 +13,10 @@ def indicate_access_level(name: str) -> str:
 
     if name.startswith("__"):
         # double underscore indicates private
-        return "- " + name[2:]
+        return "-" + name[2:]
     elif name.startswith("_"):
         # single underscore indicates protected
-        return "# " + name[1:]
+        return "#" + name[1:]
     else:
         # no underscore indicates public
-        return "+ " + name
+        return "+" + name
