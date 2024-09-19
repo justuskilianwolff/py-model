@@ -1,9 +1,8 @@
-from dataclasses import dataclass
-
 from .person import Person
 
 
-@dataclass
 class Employee(Person):
-    id: int
-    salary: float
+    def __init__(self, name: str, age: int, employee_id: int, salary):
+        super().__init__(name, age)
+        self.employee_id = employee_id
+        self.salary = salary
