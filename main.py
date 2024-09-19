@@ -1,13 +1,21 @@
+import argparse
+
 from model_viz.logging import get_logger
-from model_viz.utils import set_project_name
 
 logger = get_logger(__name__, level="INFO")
 
-logger.info("Hello, world!")
 
+# setup argument parser
+parser = argparse.ArgumentParser(description="Argument parser for for the model-viz package.")
 
-project_name = "my-project"
+# add arguments
+parser.add_argument("--dirs", "-d", nargs="?", type=str, default=["src"], help="Directories to search for model files.")
+parser.add_argument("--files", "-f", nargs="?", type=str, help="Files to search for model files.")
+parser.add_argument(
+    "--output", "-o", type=str, default="model-viz.dot", help="Output file to save the visualization file."
+)
+parser.add_argument("--verbose", "-v", action="store_true", help="Increase verbosity of the output.")
 
-set_project_name('model-viz')
-
-logger.info(f"Project name is {project_name}")
+# parse arguments
+args = parser.parse_args()
+print(args)
