@@ -52,3 +52,29 @@ def print_function(function: ast.FunctionDef, parameters: bool = True, return_ty
 
     return function_str
 
+
+def print_attribute(attribute: ast.AnnAssign | ast.Assign) -> str:
+    """
+    Return a string representation of an attribute.
+
+    Args:
+        attribute (ast.AnnAssign | ast.Assign): The attribute to print.
+
+    Returns:
+        str: The string representation of the attribute.
+    """
+    # Attribute name
+    if isinstance(attribute.target, ast.Name):
+        attribute_str = indicate_access_level(attribute.target.id)
+    else:
+        raise NotImplementedError()
+
+    # Attribute type
+    if isinstance(attribute, ast.AnnAssign):
+        if isinstance(attribute.annotation, ast.Name):
+            attribute_str += f": {attribute.annotation.id}"
+        else:
+            logger.warning(f"Unknown attribute type for attribute: {attribute.target.id}")
+    else:
+        pass
+    return attribute_str
