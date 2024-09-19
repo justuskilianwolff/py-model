@@ -1,21 +1,20 @@
-import argparse
-
 from model_viz.logging import get_logger
+from model_viz.navigation import get_filepath_set
+from model_viz.parser import parser
+
+args = parser.parse_args()
 
 logger = get_logger(__name__, level="INFO")
 
+# convert args to a dictionary
+args_dict = vars(args)
 
-# setup argument parser
-parser = argparse.ArgumentParser(description="Argument parser for for the model-viz package.")
+# for testing purposes add dir
+# args_dict["dirs"] = ["example_models/model_set_1"]
 
-# add arguments
-parser.add_argument("--dirs", "-d", nargs="?", type=str, default=["src"], help="Directories to search for model files.")
-parser.add_argument("--files", "-f", nargs="?", type=str, help="Files to search for model files.")
-parser.add_argument(
-    "--output", "-o", type=str, default="model-viz.dot", help="Output file to save the visualization file."
-)
-parser.add_argument("--verbose", "-v", action="store_true", help="Increase verbosity of the output.")
+# get the file paths
+filepaths = get_filepath_set(dirs=args_dict.get("dirs"), files=args_dict.get("files"))
 
-# parse arguments
-args = parser.parse_args()
-print(args)
+
+for filepath in filepaths:
+    logger.info(f"File path: {filepath}")
