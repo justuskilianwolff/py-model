@@ -1,4 +1,6 @@
+import ast
 import os
+from ast import ClassDef
 
 from model_viz.logging import get_logger
 
@@ -36,3 +38,13 @@ def get_filepath_set(dirs: list[str] | None = None, files: list[str] | None = No
         raise ValueError("No files found in provided dirs and files.")
 
     return filepaths
+
+
+def get_classes(filepath: str) -> list[ClassDef]:
+    with open(filepath, "r") as file:
+        tree = ast.parse(file.read(), filename=filepath)
+
+    # get all class definitions
+    nodes = [node for node in ast.walk(tree) if isinstance(node, ast.ClassDef)]
+
+    return nodes
