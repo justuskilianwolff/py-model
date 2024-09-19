@@ -1,0 +1,37 @@
+name: Format and run tests
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Git
+        run: |
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+      - name: Add rye
+        uses: eifinger/setup-rye@v4
+        with:
+          version: "latest"
+          enable-cache: true
+      - name: Sync dependencies
+        run: rye sync
+      - name: Lint and format
+        run: |
+          rye lint --fix
+          rye fmt
+      - name: Commit and push changes
+        run: |
+          git add .
+          git commit -m "Apply linting and formatting" || echo "No changes to commit"
+          git push
+      - name: Run tests
+        run: rye run pytest .
+      - name: Run vulture
+        run: rye run vulture .  
+      # TODO: add coverage report

@@ -1,0 +1,73 @@
+[project]
+name = "python-template"
+version = "0.1.0"
+description = "Add your description here"
+authors = [
+    { name = "Justus Kilian Wolff", email = "moin@justuskilianwolff.com" },
+]
+dependencies = []
+readme = "README.md"
+requires-python = ">= 3.11"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed = true
+dev-dependencies = [
+    "ruff>=0.4.2",
+    "pytest>=8.0.2",
+    "coverage>=7.4.2",
+    "vulture>=2.11",
+    "pylint>=3.1.0",
+    "python-dotenv>=1.0.1",
+]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/python_template"]
+
+[tool.ruff]
+line-length = 120
+respect-gitignore = false
+src = ["src"]
+extend-include = ["*.ipynb"]
+exclude = [".venv"]
+
+[tool.ruff.lint]
+extend-select = ["I"] # also sort imports etc
+
+[tool.pytest.ini_options]
+log_cli = true
+log_cli_level = "WARNING"
+addopts = "-W ignore::DeprecationWarning"
+
+[tool.pylint]
+disable = [
+    "C0103", # constants not upper case
+    "C0301", # line too long
+    "C0114", # missing module docstring
+    "W1203", # logger with f string formatting
+    "R0913", # too many arguments
+    "W0511", # fixme
+    "W0212", # accessing protected members
+    "R1720", # Unnecessary "elif" after "raise", remove the leading "el" from "elif" (has a better readibility though)
+    "R0914", # too many local variables
+    "R1705", # else after return (improves readibility imho)
+    "R0902", # too many instance attributes
+    "R0903", # too few public methods
+]
+ignore-paths = [".venv", "test[^_]*py"]
+recursive = "y"
+
+[tool.vulture]
+exclude = [".venv", "tests"]
+min_confidence = 100
+paths = ["."]
+ignore_decorators = ["@vulture_ignore"]
+
+[tool.coverage.run]
+source = ["."]
