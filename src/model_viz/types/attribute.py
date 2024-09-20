@@ -1,5 +1,6 @@
-from model_viz.types import TypeHintableValue
 from model_viz.utils import indicate_access_level
+
+from . import TypeHintableValue
 
 
 class Attribute(TypeHintableValue):
