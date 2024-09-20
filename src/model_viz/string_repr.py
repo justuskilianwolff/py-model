@@ -2,7 +2,8 @@ import ast
 
 from model_viz.logging import get_logger
 
-from .utils import indicate_access_level
+from .errors import NotImplementedError
+from .utils import handle_function_arg, indicate_access_level
 
 logger = get_logger(__name__)
 
@@ -27,13 +28,13 @@ def get_func_repr(function: ast.FunctionDef, parameters: bool = True, return_typ
         # iterate over function arguments
         for arg in function.args.args:
             if arg.arg == "self":
+                # skip 'self' argument
                 continue
             else:
-                if isinstance(arg.annotation, ast.Name):
-                    function_str += f"{arg.arg}: {arg.annotation.id}, "  # TODO: fix
-                else:
-                    raise NotImplementedError()
-        # remove trailing comma and space
+                name, tp = handle_function_arg(arg)
+                function_str += f"{name}: {tp}, " if tp else f"{name}, "
+
+        # remove trailing comma and space if there are any
         if function_str.endswith(", "):
             function_str = function_str[:-2]
 
@@ -42,13 +43,18 @@ def get_func_repr(function: ast.FunctionDef, parameters: bool = True, return_typ
 
     if return_type:
         # Function return type
-        if isinstance(function.returns, ast.Constant):
+        if function.returns is None:
+            # no return type specified
+            pass
+        elif isinstance(function.returns, ast.Constant):
+            # -> None:
             function_str += " -> None"
         elif isinstance(function.returns, ast.Name):
+            # -> int:, str:, etc.
             function_str += f" -> {function.returns.id}"
         else:
             # TODO: Implement support for more return types (e.g. List, Dict, Tuple, etc.)
-            function_str += " -> not implemented"
+            function_str += " -> complex dtype (not implemented yet)"
             logger.warning(f"Unknown return type for function: {function.name}")
 
     return function_str
