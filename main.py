@@ -5,7 +5,7 @@ from model_viz.types.class_instance import ClassInstance
 
 args = parser.parse_args()
 
-logger = get_logger(__name__, level="ERROR")
+logger = get_logger(__name__, level="WARNING")
 
 # convert args to a dictionary
 args_dict = vars(args)

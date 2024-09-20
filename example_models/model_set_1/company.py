@@ -14,5 +14,6 @@ class Company:
         print(f"{self.company_name} is going public at a stock price of {stock_price}.")
 
     def sell(self) -> tuple[float, int]:
+        self.employees: list[Employee] = []
         print(f"{self.company_name} is being sold.")
         return (100.0, 10)
