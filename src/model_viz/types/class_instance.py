@@ -80,7 +80,7 @@ class ClassInstance:
                 cls.body.remove(item)
 
         # visit all assign and ann_assign nodes in the class body but not within a nested class
-        # FIXME: create a innerclass list andn then recursively visit
+        # FIXME: create a innerclass list and then recursively visit
         general_assign_visitor = OuterGeneralAssignVisitor(class_name=cls.name)
         general_assign_visitor.visit(cls)
 
