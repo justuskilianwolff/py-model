@@ -1,8 +1,7 @@
-from model_viz.class_instance import ClassInstance
 from model_viz.logging import get_logger
 from model_viz.navigation import get_classes, get_filepath_set
 from model_viz.parser import parser
-from model_viz.string_repr import get_attr_repr
+from model_viz.types.class_instance import ClassInstance
 
 args = parser.parse_args()
 
@@ -34,14 +33,14 @@ for filepath in sorted(filepaths):
 for class_instance in class_instances:
     print(class_instance)
 
-joined_attributes = []
-class_names = []
-for cls in class_instances:
-    for attr in cls.attributes:
-        joined_attributes.append(attr)
-        class_names.append(cls.class_name)
+# joined_attributes = []
+# class_names = []
+# for cls in class_instances:
+#     for attr in cls.attributes:
+#         joined_attributes.append(attr)
+#         class_names.append(cls.class_name)
 
-print(joined_attributes)
+# print(joined_attributes)
 
-for cls_name, attr in zip(class_names, joined_attributes):
-    print(cls_name + " " + get_attr_repr(attr))
+# for cls_name, attr in zip(class_names, joined_attributes):
+#     print(cls_name + " " + get_attr_repr(attr))
