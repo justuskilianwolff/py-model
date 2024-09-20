@@ -3,7 +3,7 @@ import ast
 from model_viz.logging import get_logger
 
 from ..utils import OuterGeneralAssignVisitor
-from . import Attribute, Function, Parameter
+from . import Attribute, Function
 
 logger = get_logger(__name__)
 
@@ -36,46 +36,12 @@ class ClassInstance:
         functions = []
         for body_item in cls.body:
             if isinstance(body_item, ast.FunctionDef):
-                # function name
-                function_name = body_item.name
+                func = Function.create_function(func=body_item)
 
                 # skip __init__ method
-                if function_name == "__init__":
+                if func.name == "__init__":
                     continue
 
-                # function return type
-                if body_item.returns is None:
-                    # no return type specified
-                    return_type = None
-                elif isinstance(body_item.returns, ast.Constant):
-                    # -> None:
-                    return_type = "None"
-                elif isinstance(body_item.returns, ast.Name):
-                    # -> int:, str:, etc.
-                    return_type = body_item.returns.id
-                else:
-                    # TODO: Implement support for more return types (e.g. List, Dict, Tuple, etc.)
-                    return_type = "complex dtype (not implemented yet)"
-                    logger.warning(f"Unknown return type for function: {body_item.name}")
-
-                parameters = []
-                for arg in body_item.args.args:
-                    if arg.arg == "self":
-                        # skip 'self' argument
-                        continue
-                    else:
-                        if isinstance(arg.annotation, ast.Name):
-                            tp = arg.annotation.id
-                        elif arg.annotation is None:
-                            tp = None
-                        else:
-                            raise NotImplementedError()
-
-                    parameter = Parameter(name=arg.arg, type=tp)
-                    parameters.append(parameter)
-
-                # create function
-                func = Function(name=function_name, parameters=parameters, return_type=return_type)
                 functions.append(func)
 
         return functions
