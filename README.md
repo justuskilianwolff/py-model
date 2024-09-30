@@ -1,33 +1,87 @@
-# Python Template
-This is a template for a python project using `rye` as a package manager.
+# py-model
 
-## Rye
-Rye is a comprehensive project and package management solution for Python. Docs can be found [here](https://rye.astral.sh/). The dependencies are managed via the `pyproject.toml`file.
+This package aims at improved workflows with Python data models. The main functionality using your Python model is to
+- generate class diagrams from it
+- convert to other coding languages.
 
-### Adding and removing dependecies
-- Add a [development] dependency: `rye add [--dev] <package_name>`
-- Add an optional dependency, e.g., for an interface: `rye add --optional interface streamlit`
-- Remove a dependency: `rye remove <package_name>`
-  
-### Syncing the virtual environment
-- Sync virtual environment with last settings (default is to sync normal and dev, but no optional dependencies): `rye sync`
-- When you want to change the last settings pass the `--reset`
-- `--no-dev` excludes the development dependencies
-- To install optional features use the `--feature` flag: `rye sync --features interface`
+## Example
+Let's assume your file `models.py` contains following code: 
+```python
+class Person:
+    def __init__(name:str, age:int):
+        self.name: str
+        self.age: int
 
-### Updating
-- To self update run: `rye self update`
+class Developer(Person):
+    def __init__(name:str, age:int, languages: list[str]):
+        super().__init__(name=name, age=age)
+        self.languages: list[str] = languages
+```
+We could then either create a class diagram (look at supported formats below), like here:
+TODO
 
-## Coverage
-Check whether your code is properly tested: `coverage .`
+or convert this to typescript:
+```typescript
+interface and so on
+```
 
-## Vulture
-Check whether your code is used: `vulture . [--min-confidence <int>]`
+## Support
+"Normal" Python and dataclasses are supported by this package. However, only attributes within the constructor will be considered. 
+```python
+from dataclasses import dataclass
 
-## Pylint 
-Lint your code: `pylint .`
+@dataclass
+class Tree:
+    heigt: float # will be picked up as float
 
-## Ruff
-I acutally don't know if this is much different from `rye fmt`and `rye lint, but I usually use (with the alias `ru`):
-- Formatting: `ruff format`
-- Linting and fixing: `ruff check --fix`
+    def cut_branches(cut_branches: int) -> None:
+        self.cut_branches: int = cut_branches # attribute will NOT be picked up since not in constructor
+
+class Bush:
+    def __init__(volume:int) -> None:
+        self.volumne = volumne # datatype will NOT be picked up since no annotated assignment
+```
+
+### Datatypes
+Following data types are supported, with their equivalent in other languages
+- None
+- bool
+- int
+- float
+- complex
+- str
+- list
+- tuple
+- dict
+- set
+- Enum
+- class
+
+Following conjunctions are suppoerte
+- union: | (please rewrite `Optional[int]` to `int | None`)
+
+## Upcoming
+### Cardinality
+Additional cardsupport for class diagrams, where 
+```python
+from dataclasses import dataclass
+from py_model import cardinality
+
+class Wagon:
+    pass
+
+@dataclass
+@cardinality(wagons=('1', '1..*'))
+class Train:
+    wagons: list[Wagon]
+```
+which would result in following plot:
+-todo- 
+
+### Nested Classes
+
+be able to also plot and work with nested classes
+
+### Miscalleneous
+- support for frozenset
+- 
