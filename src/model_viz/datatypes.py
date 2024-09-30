@@ -5,8 +5,20 @@ from dataclasses import dataclass
 
 
 class DataType:
-    def handle_ast_name(self, obj: ast.Name) -> str:
-        return MATCHING[obj.id]
+    @classmethod
+    def handle_ast(cls, obj: ast.Name):
+        if isinstance(obj, ast.Name):
+            MATCHING = {
+                "None": NoneType(),
+                "int": Integer(),
+                "float": Float(),
+                "str": String(),
+                "tuple": Tuple(),
+                "Enum": Enumeration(),
+            }
+            return MATCHING[obj.id]
+        else:
+            print('please implement')
 
 
 class Undefined(DataType):
@@ -66,13 +78,3 @@ class Tuple(DataType, Sequence):
 class Enumeration(DataType):
     def __str__(self) -> str:
         return "Enum"
-
-
-MATCHING = {
-    "None": NoneType(),
-    "int": Integer(),
-    "float": Float(),
-    "str": String(),
-    "tuple": Tuple(),
-    "Enum": Enumeration(),
-}

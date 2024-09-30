@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import ast
 
-from model_viz.datatypes import MATCHING, DataType, NoneType, Tuple, Undefined
+from model_viz.datatypes import DataType, NoneType, Tuple, Undefined
 from model_viz.errors import NotImplementedError
 from model_viz.logging import get_logger
-from model_viz.utils import indicate_access_level, handle_ast_name
+from model_viz.utils import indicate_access_level
 from model_viz.visitors import OuterAssignVisitor
 
 from . import Attribute, Attributes, Parameter
@@ -61,7 +61,7 @@ class Function(Instance):
             return NoneType()
         elif isinstance(return_object, ast.Name):
             # -> int:, str:, etc.
-            return handle_ast_name(obj=return_object)
+            return DataType.handle_ast(obj=return_object)
         elif isinstance(return_object, ast.Subscript):
             # e.g. tuple[int, float]
             if isinstance(return_object.slice, ast.Tuple):
@@ -81,7 +81,7 @@ class Function(Instance):
                 continue
             else:
                 if isinstance(arg.annotation, ast.Name):
-                    dtype = MATCHING[arg.annotation.id]
+                    dtype = DataType.handle_ast(obj=arg.annotation.id)
                 elif arg.annotation is None:
                     dtype = Undefined()
                 else:
