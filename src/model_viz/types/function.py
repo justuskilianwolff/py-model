@@ -2,19 +2,24 @@ from __future__ import annotations
 
 import ast
 
+from model_viz.datatypes import MATCHING, DataType, NoneType, Undefined
+from model_viz.errors import NotImplementedError
 from model_viz.logging import get_logger
 from model_viz.utils import indicate_access_level
 
+from .instance import Instance
 from .parameter import Parameter
 
 logger = get_logger(__name__)
 
 
-class Function:
-    def __init__(self, name: str, parameters: list[Parameter], return_type: str | None) -> None:
-        self.name = name
-        self.parameters = parameters
-        self.return_type = return_type
+class Function(Instance):
+    def __init__(self, fun: ast.FunctionDef) -> None:
+        self.name = fun.name
+        self.parameters: list[Parameter] = self.get_parameters(fun.args.args)
+        self.return_type: DataType = self.get_return_type(fun.returns)
+
+        super().__init__(definition=fun)
 
     def __str__(self) -> str:
         str_representation = f"{self.name}({', '.join([str(param) for param in self.parameters])})"
@@ -22,38 +27,35 @@ class Function:
             str_representation += f" -> {self.return_type}"
         return indicate_access_level(str_representation)
 
-    @classmethod
-    def create_function(cls, func: ast.FunctionDef) -> Function:
+    def get_return_type(self, return_object):
         # function return type
-        if func.returns is None:
+        if return_object is None:
             # no return type specified
-            return_type = None
-        elif isinstance(func.returns, ast.Constant):
+            return Undefined()
+        elif isinstance(return_object, ast.Constant):
             # -> None:
-            return_type = "None"
-        elif isinstance(func.returns, ast.Name):
+            return NoneType()
+        elif isinstance(return_object, ast.Name):
             # -> int:, str:, etc.
-            return_type = func.returns.id
+            return MATCHING[str(return_object.id)]
         else:
-            # TODO: Implement support for more return types (e.g. List, Dict, Tuple, etc.)
-            return_type = "complex dtype (not implemented yet)"
-            logger.warning(f"Unknown return type for function: {func.name}")
-        
-        # TODO: handle inner functions and classes (v2)
+            raise NotImplementedError
+
+    def get_parameters(self, args):
         parameters = []
-        for arg in func.args.args:
+        for arg in args:
             if arg.arg == "self":
-                # skip 'self' argument
+                # skip 'self' argument (the self from the class)
                 continue
             else:
                 if isinstance(arg.annotation, ast.Name):
-                    tp = arg.annotation.id
+                    dtype = MATCHING[str(arg.id)]
                 elif arg.annotation is None:
-                    tp = None
+                    dtype = Undefined()
                 else:
                     raise NotImplementedError()
 
-            parameter = Parameter(name=arg.arg, type=tp)
+            parameter = Parameter(name=arg.arg, type=dtype)
             parameters.append(parameter)
 
-        return cls(name=func.name, parameters=parameters, return_type=return_type)
+        return parameters

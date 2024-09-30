@@ -1,5 +1,3 @@
-import ast
-
 from model_viz.logging import get_logger
 
 logger = get_logger(__name__)
@@ -22,25 +20,3 @@ def indicate_access_level(name: str) -> str:
     else:
         # no underscore indicates public
         return "+" + name
-
-
-class OuterGeneralAssignVisitor(ast.NodeVisitor):
-    def __init__(self, class_name: str):
-        self.ann_assigns: list[ast.AnnAssign] = []
-        self.assigns: list[ast.Assign] = []
-        self.inside_class = False
-        self.class_name = class_name
-
-    def visit_ClassDef(self, node: ast.ClassDef):
-        if node.name == self.class_name:
-            super().generic_visit(node)
-        else:
-            pass
-
-    def visit_AnnAssign(self, node: ast.AnnAssign):
-        if not self.inside_class:
-            self.ann_assigns.append(node)
-
-    def visit_Assign(self, node: ast.Assign):
-        if not self.inside_class:
-            self.assigns.append(node)

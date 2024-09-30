@@ -1,7 +1,7 @@
 from model_viz.logging import get_logger
 from model_viz.navigation import get_classes, get_filepath_set
 from model_viz.parser import parser
-from model_viz.types.class_instance import ClassInstance
+from model_viz.types.class_definition import Class
 
 args = parser.parse_args()
 
@@ -17,7 +17,7 @@ args_dict["dirs"] = ["example_models/model_set_1"]
 filepaths = get_filepath_set(dirs=args_dict.get("dirs"), files=args_dict.get("files"))
 
 
-class_instances: list[ClassInstance] = list()
+class_instances: list[Class] = list()
 
 for filepath in sorted(filepaths):
     logger.info(f"File path: {filepath}")
@@ -25,7 +25,7 @@ for filepath in sorted(filepaths):
 
     # create class instances
     for cls in classes:
-        class_instance = ClassInstance(cls=cls, filepath=filepath)
+        class_instance = Class(cls=cls, filepath=filepath)
         class_instances.append(class_instance)
 
 

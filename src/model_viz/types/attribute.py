@@ -15,7 +15,7 @@ class Attribute(TypeHintableValue):
         return self.type is not None
 
     @classmethod
-    def handle_ann_assign(cls, node: ast.AnnAssign, is_dc: bool) -> Attribute | None:
+    def handle_annotated_assignment(cls, node: ast.AnnAssign, is_dataclass: bool) -> Attribute:
         # obtain name
         if isinstance(node.target, ast.Attribute):
             # happens when
@@ -25,7 +25,7 @@ class Attribute(TypeHintableValue):
         else:
             raise NotImplementedError()
 
-        if not is_dc:
+        if not is_dataclass:
             # if it is not a dataclass, the attribute should start with 'self.'
             if isinstance(node.target, ast.Attribute):
                 if node.target.value.id != "self":
