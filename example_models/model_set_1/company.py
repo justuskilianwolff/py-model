@@ -17,3 +17,6 @@ class Company:
         self.employees: list[Employee] = []
         print(f"{self.company_name} is being sold.")
         return (100.0, 10)
+
+    def sell_2(self) -> tuple:
+        return ()

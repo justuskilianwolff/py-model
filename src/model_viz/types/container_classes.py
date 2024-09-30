@@ -1,11 +1,96 @@
+from __future__ import annotations
+
 import ast
 
+from model_viz.datatypes import MATCHING, DataType, NoneType, Tuple, Undefined
+from model_viz.errors import NotImplementedError
 from model_viz.logging import get_logger
+from model_viz.utils import indicate_access_level, handle_ast_name
+from model_viz.visitors import OuterAssignVisitor
 
-from ..visitors import OuterAssignVisitor
-from . import Attribute, Attributes, Instance
+from . import Attribute, Attributes, Parameter
 
 logger = get_logger(__name__)
+
+
+class Instance:
+    """Parent of Function and Class"""
+
+    def __init__(self, body: list[ast.stmt]):
+        # set those when walking the body
+        self.functions: list[Function] = []
+        self.classes: list[Class] = []
+
+        self.walk_body(body=body)
+
+    def walk_body(self, body):
+        for body_item in body:
+            if isinstance(body_item, ast.FunctionDef):
+                self.functions.append(Function(fun=body_item))
+            elif isinstance(body_item, ast.ClassDef):
+                self.classes.append(Class(cls=body_item))
+            elif isinstance(body_item, (ast.AnnAssign, ast.Assign, ast.Expr)):
+                continue
+            else:
+                logger.warning("Not implemented")
+
+
+class Function(Instance):
+    def __init__(self, fun: ast.FunctionDef) -> None:
+        self.name = fun.name
+        logger.debug(f"Starting with function {self.name}")
+        self.parameters: list[Parameter] = self.get_parameters(fun.args.args)
+        self.return_type: DataType = self.get_return_type(fun.returns)
+
+        super().__init__(body=fun.body)
+        logger.info(f"finished function {self.name}")
+
+    def __str__(self) -> str:
+        str_representation = f"{self.name}({', '.join([str(param) for param in self.parameters])})"
+        if self.return_type is not None:
+            str_representation += f" -> {self.return_type}"
+        return indicate_access_level(str_representation)
+
+    def get_return_type(self, return_object):
+        # function return type
+        if return_object is None:
+            # no return type specified
+            return Undefined()
+        elif isinstance(return_object, ast.Constant):
+            # -> None:
+            return NoneType()
+        elif isinstance(return_object, ast.Name):
+            # -> int:, str:, etc.
+            return handle_ast_name(obj=return_object)
+        elif isinstance(return_object, ast.Subscript):
+            # e.g. tuple[int, float]
+            if isinstance(return_object.slice, ast.Tuple):
+                return Tuple(slice=return_object.slice)
+            else:
+                logger.warning("Not implemented")
+        else:
+            logger.warning("Not implemented")
+
+            # raise NotImplementedError
+
+    def get_parameters(self, args):
+        parameters = []
+        for arg in args:
+            if arg.arg == "self":
+                # skip 'self' argument (the self from the class)
+                continue
+            else:
+                if isinstance(arg.annotation, ast.Name):
+                    dtype = MATCHING[arg.annotation.id]
+                elif arg.annotation is None:
+                    dtype = Undefined()
+                else:
+                    raise NotImplementedError()
+
+            parameter = Parameter(name=arg.arg, type=dtype)
+            parameters.append(parameter)
+
+        return parameters
 
 
 class Class(Instance):
@@ -18,7 +103,7 @@ class Class(Instance):
         self.inherits_from: list[str] = self.get_inheritance(cls)
         self.attributes: Attributes = self.get_attributes(cls)
 
-        super().__init__(definition=cls)
+        super().__init__(body=self.body)
 
     def __str__(self) -> str:
         name = self.class_name
@@ -75,7 +160,7 @@ class Class(Instance):
                     if body_item.name == "__init__":
                         init_method = body_item
                         # dont walk init function when walking the body
-                        self.body.remove(body_item)  # TODO: check this actually works
+                        self.body.remove(body_item)
                         break
 
             if init_method is None:

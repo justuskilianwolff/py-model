@@ -1,42 +1,78 @@
-from enum import Enum
+from __future__ import annotations
+
+import ast
+from dataclasses import dataclass
 
 
 class DataType:
-    pass
+    def handle_ast_name(self, obj: ast.Name) -> str:
+        return MATCHING[obj.id]
 
 
 class Undefined(DataType):
-    pass
+    def __str__(self) -> str:
+        return ""
 
 
 class NoneType(DataType):
-    pass
+    def __str__(self) -> str:
+        return "None"
 
 
 class Integer(DataType):
-    pass
+    def __str__(self) -> str:
+        return "int"
 
 
 class Boolean(DataType):
-    pass
+    def __str__(self) -> str:
+        return "bool"
 
 
 class Float(DataType):
-    pass
+    def __str__(self) -> str:
+        return "float"
 
 
 class String(DataType):
-    pass
+    def __str__(self) -> str:
+        return "string"
+
+
+class Sequence:
+    def handle_slice(self, slice: ast.Tuple):
+        for obj in slice.dims:
+            if isinstance(obj, ast.Name):
+                pass
+
+                print("jhi")
+                pass
+            else:
+                pass
+
+
+@dataclass
+class Tuple(DataType, Sequence):
+    def __init__(self, slice: ast.Tuple | None = None):
+        self.inner_dtypes: list[DataType] | None = None
+
+    def __str__(self) -> str:
+        if self.inner_dtypes is None:
+            return "tuple"
+        else:
+            return f'tuple[{",".join([str(dtype) for dtype in self.inner_dtypes])}]'
 
 
 class Enumeration(DataType):
-    pass
+    def __str__(self) -> str:
+        return "Enum"
 
 
 MATCHING = {
-    str(None): NoneType(),
-    str(int): Integer(),
-    str(float): Float(),
-    str(str): String(),
-    str(Enum): Enumeration(),
+    "None": NoneType(),
+    "int": Integer(),
+    "float": Float(),
+    "str": String(),
+    "tuple": Tuple(),
+    "Enum": Enumeration(),
 }
