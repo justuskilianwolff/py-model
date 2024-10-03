@@ -1,6 +1,17 @@
 import ast
 
-from model_viz.datatypes import DataType, Enumeration, Float, Integer, List, NoneType, String, Tuple, Undefined
+from model_viz.datatypes import (
+    CustomClass,
+    DataType,
+    Enumeration,
+    Float,
+    Integer,
+    List,
+    NoneType,
+    String,
+    Tuple,
+    Undefined,
+)
 from model_viz.logging import get_logger
 
 logger = get_logger(__name__)
@@ -54,27 +65,27 @@ def handle_type_annotation(annotation) -> DataType:
         return NoneType()
     elif isinstance(annotation, ast.Name):
         # Datatype was specified, e.g.: function() -> str:
-        return MATCHING[annotation.id]
+        try:
+            return MATCHING[annotation.id]
+        except KeyError:
+            # if not in matching, it is a custom class
+            return CustomClass(name=annotation.id)
     elif isinstance(annotation, ast.Subscript):
-        slice = annotation.slice
-        # combined Datatype, e.g.: function -> tuple[int, float]:
-        if isinstance(slice, ast.Name):
-            try:
-                logger.info(f"Key error: {slice.id}")
-                return Tuple(inner_dtypes=[MATCHING[slice.id]])
-            except KeyError:
-                # the inner type is not a basic type and might be a class
-                # TODO: what happens if this is not a class
-                return Tuple(inner_dtypes=[slice.id])
-        elif isinstance(slice, (ast.Tuple, ast.List)):
+        # obtain value
+        value = annotation.value
+        if isinstance(annotation.slice, ast.Name):
+            inner_dtypes = [handle_type_annotation(annotation.slice)]
+        else:
             inner_dtypes = [handle_type_annotation(inner_type) for inner_type in annotation.slice.elts]
-            if isinstance(slice, ast.Tuple):
-                return Tuple(inner_dtypes=inner_dtypes)
-            elif isinstance(slice, ast.List):
-                return List(inner_dtypes=inner_dtypes)
-            else:
-                raise ValueError("Should not reach here")
+
+        if value.id == "list":
+            # list Datatype, e.g.: function -> list[str]:
+            return List(inner_dtypes=inner_dtypes)
+        elif value.id == "tuple":
+            # tuple Datatype, e.g.: function -> tuple[str, int]:
+            return Tuple(inner_dtypes=inner_dtypes)
         else:
             raise NotImplementedError("Subscript type not implemented")
+
     else:
         raise NotImplementedError("Type annotation not implemented")

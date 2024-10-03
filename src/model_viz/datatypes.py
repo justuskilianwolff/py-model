@@ -6,6 +6,12 @@ from dataclasses import dataclass
 class DataType:
     pass
 
+class CustomClass(DataType):
+    def __init__(self, name: str) -> None:
+        self.name = name
+
+    def __str__(self) -> str:
+        return self.name
 
 class Undefined(DataType):
     def __str__(self) -> str:

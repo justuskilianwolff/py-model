@@ -7,5 +7,5 @@ class Employee(Person):
         self.employee_id: int = employee_id
         self.salary = salary
 
-    def spend_salary(self, amount: float, test="salary"):
+    def spend_salary(self, amount: float | int, test="salary"):
         print(f"{self.name} is spending {amount} of their {test}.")
