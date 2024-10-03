@@ -11,6 +11,7 @@ from model_viz.datatypes import (
     String,
     Tuple,
     Undefined,
+    Union,
 )
 from model_viz.logging import get_logger
 
@@ -86,6 +87,19 @@ def handle_type_annotation(annotation) -> DataType:
             return Tuple(inner_dtypes=inner_dtypes)
         else:
             raise NotImplementedError("Subscript type not implemented")
-
+    elif isinstance(annotation, ast.BinOp):
+        if isinstance(annotation.op, ast.BitOr):
+            # make sure pipe is used for Union, e.g.: function() -> str | int:
+            inner_dtypes = []
+            # obtain left and right dtypes
+            left = handle_type_annotation(annotation.left)
+            right = handle_type_annotation(annotation.right)
+            if isinstance(left, Union):
+                inner_dtypes.extend(left.inner_dtypes)
+            if isinstance(right, Union):
+                inner_dtypes.extend(right.inner_dtypes)
+            return Union(inner_dtypes=[left, right])
+        else:
+            raise NotImplementedError("Binary operation not implemented")
     else:
         raise NotImplementedError("Type annotation not implemented")

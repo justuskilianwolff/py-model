@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 
 class DataType:
     pass
+
 
 class CustomClass(DataType):
     def __init__(self, name: str) -> None:
@@ -12,6 +11,7 @@ class CustomClass(DataType):
 
     def __str__(self) -> str:
         return self.name
+
 
 class Undefined(DataType):
     def __str__(self) -> str:
@@ -55,7 +55,11 @@ class Sequence:
             return f'{container}[{", ".join(str(dtype) for dtype in self.inner_dtypes)}]'
 
 
-@dataclass
+class NotEmptySequence(Sequence):
+    def __init__(self, inner_dtypes: list[DataType | str]) -> None:
+        self.inner_dtypes = inner_dtypes
+
+
 class Tuple(DataType, Sequence):
     def __init__(self, inner_dtypes: list[DataType | str] | None = None) -> None:
         super().__init__(inner_dtypes)
@@ -69,3 +73,11 @@ class List(DataType, Sequence):
 class Enumeration(DataType):
     def __str__(self) -> str:
         return "Enum"
+
+
+class Union(NotEmptySequence, DataType):
+    def __init__(self, inner_dtypes: list[DataType | str]) -> None:
+        super().__init__(inner_dtypes)
+
+    def __str__(self) -> str:
+        return f"{' | '.join(str(dtype) for dtype in self.inner_dtypes)}"
