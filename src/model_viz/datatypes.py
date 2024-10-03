@@ -5,20 +5,7 @@ from dataclasses import dataclass
 
 
 class DataType:
-    @classmethod
-    def handle_ast(cls, obj: ast.Name):
-        if isinstance(obj, ast.Name):
-            MATCHING = {
-                "None": NoneType(),
-                "int": Integer(),
-                "float": Float(),
-                "str": String(),
-                "tuple": Tuple(),
-                "Enum": Enumeration(),
-            }
-            return MATCHING[obj.id]
-        else:
-            print('please implement')
+    pass
 
 
 class Undefined(DataType):

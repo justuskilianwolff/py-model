@@ -25,7 +25,7 @@ for filepath in sorted(filepaths):
 
     # create class instances
     for cls in classes:
-        class_instance = Class(cls=cls, filepath=filepath)
+        class_instance = Class.from_ast(cls)
         class_instances.append(class_instance)
 
 
