@@ -28,12 +28,12 @@ class Attributes:
             if attribute.has_type():
                 # if it has a type hint, update the type hint of the existing attribute (if that doesnt have one)
                 if attr.has_type():
-                    logger.info(f"Attribute {attribute.name} already has a type hint: {attr.type}.")
-                    if attr.type != attribute.type:
+                    logger.info(f"Attribute {attribute.name} already has a type hint: {attr.dtype}.")
+                    if attr.dtype != attribute.dtype:
                         logger.warning(f"Attribute {attribute.name} has different type hints.")
                 else:
-                    logger.info(f"Adding type hint {attribute.type} to attribute {attribute.name}.")
-                    attr.type = attribute.type
+                    logger.info(f"Adding type hint {attribute.dtype} to attribute {attribute.name}.")
+                    attr.dtype = attribute.dtype
 
         self.attributes.append(attribute)
 

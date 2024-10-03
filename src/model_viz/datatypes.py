@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import ast
 from dataclasses import dataclass
 
 
@@ -39,27 +38,26 @@ class String(DataType):
 
 
 class Sequence:
-    def handle_slice(self, slice: ast.Tuple):
-        for obj in slice.dims:
-            if isinstance(obj, ast.Name):
-                pass
+    def __init__(self, inner_dtypes: list[DataType | str] | None = None) -> None:
+        self.inner_dtypes = inner_dtypes
 
-                print("jhi")
-                pass
-            else:
-                pass
+    def __str__(self) -> str:
+        container = self.__class__.__name__.lower()
+        if self.inner_dtypes is None:
+            return container
+        else:
+            return f'{container}[{", ".join(str(dtype) for dtype in self.inner_dtypes)}]'
 
 
 @dataclass
 class Tuple(DataType, Sequence):
-    def __init__(self, slice: ast.Tuple | None = None):
-        self.inner_dtypes: list[DataType] | None = None
+    def __init__(self, inner_dtypes: list[DataType | str] | None = None) -> None:
+        super().__init__(inner_dtypes)
 
-    def __str__(self) -> str:
-        if self.inner_dtypes is None:
-            return "tuple"
-        else:
-            return f'tuple[{",".join([str(dtype) for dtype in self.inner_dtypes])}]'
+
+class List(DataType, Sequence):
+    def __init__(self, inner_dtypes: list[DataType | str] | None = None) -> None:
+        super().__init__(inner_dtypes)
 
 
 class Enumeration(DataType):

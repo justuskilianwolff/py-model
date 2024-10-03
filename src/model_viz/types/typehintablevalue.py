@@ -4,12 +4,12 @@ from model_viz.datatypes import DataType, Undefined
 
 
 class TypeHintableValue(ABC):
-    def __init__(self, name: str, type: DataType) -> None:
+    def __init__(self, name: str, dtype: DataType) -> None:
         self.name = name
-        self.type = type
+        self.dtype = dtype
 
     def __str__(self) -> str:
-        if isinstance(self.type, Undefined):
+        if isinstance(self.dtype, Undefined):
             return f"{self.name}"
         else:
-            return f"{self.name}: {self.type}"
+            return f"{self.name}: {self.dtype}"

@@ -1,6 +1,6 @@
 import ast
 
-from model_viz.datatypes import DataType, Enumeration, Float, Integer, NoneType, String, Tuple
+from model_viz.datatypes import DataType, Enumeration, Float, Integer, List, NoneType, String, Tuple, Undefined
 from model_viz.logging import get_logger
 
 logger = get_logger(__name__)
@@ -45,5 +45,36 @@ MATCHING = {
 }
 
 
-def handle_type_annotation() -> DataType:
-    pass
+def handle_type_annotation(annotation) -> DataType:
+    if annotation is None:
+        # no return type specified: function():
+        return Undefined()
+    elif isinstance(annotation, ast.Constant):
+        # None was specified: function() -> None:
+        return NoneType()
+    elif isinstance(annotation, ast.Name):
+        # Datatype was specified, e.g.: function() -> str:
+        return MATCHING[annotation.id]
+    elif isinstance(annotation, ast.Subscript):
+        slice = annotation.slice
+        # combined Datatype, e.g.: function -> tuple[int, float]:
+        if isinstance(slice, ast.Name):
+            try:
+                logger.info(f"Key error: {slice.id}")
+                return Tuple(inner_dtypes=[MATCHING[slice.id]])
+            except KeyError:
+                # the inner type is not a basic type and might be a class
+                # TODO: what happens if this is not a class
+                return Tuple(inner_dtypes=[slice.id])
+        elif isinstance(slice, (ast.Tuple, ast.List)):
+            inner_dtypes = [handle_type_annotation(inner_type) for inner_type in annotation.slice.elts]
+            if isinstance(slice, ast.Tuple):
+                return Tuple(inner_dtypes=inner_dtypes)
+            elif isinstance(slice, ast.List):
+                return List(inner_dtypes=inner_dtypes)
+            else:
+                raise ValueError("Should not reach here")
+        else:
+            raise NotImplementedError("Subscript type not implemented")
+    else:
+        raise NotImplementedError("Type annotation not implemented")

@@ -2,10 +2,9 @@ from __future__ import annotations
 
 import ast
 
-from model_viz.datatypes import DataType, NoneType, Tuple, Undefined
-from model_viz.errors import NotImplementedError
+from model_viz.datatypes import DataType, Undefined
 from model_viz.logging import get_logger
-from model_viz.utils import determine_is_dataclass, indicate_access_level
+from model_viz.utils import determine_is_dataclass, handle_type_annotation, indicate_access_level
 from model_viz.visitors import OuterAssignVisitor
 
 from . import Attribute, Attributes, Parameter
@@ -30,11 +29,6 @@ class Instance:
                 functions.append(Function.from_ast(body_item))
             elif isinstance(body_item, ast.ClassDef):
                 classes.append(Class.from_ast(body_item))
-            elif isinstance(body_item, (ast.AnnAssign, ast.Assign, ast.Expr)):
-                # TODO: what cases are these?? Document
-                continue
-            else:
-                logger.warning(f"Not implemented for {type(body_item)}")
 
         return functions, classes
 
@@ -67,27 +61,7 @@ class Function(Instance):
 
     @classmethod
     def get_return_type(cls, return_object) -> DataType:
-        # get the return type of a function
-        if return_object is None:
-            # no return type specified: function():
-            return Undefined()
-        elif isinstance(return_object, ast.Constant):
-            # None was specified: function() -> None:
-            return NoneType()
-        elif isinstance(return_object, ast.Name):
-            # Datatype was specified, e.g.: function() -> str:
-            return DataType.handle_ast(obj=return_object)
-        elif isinstance(return_object, ast.Subscript):
-            # combined Datatype, e.g.: function -> tuple[int, float]:
-            if isinstance(return_object.slice, ast.Tuple):
-                return Tuple(slice=return_object.slice)
-            else:
-                logger.warning("Return type implemented for subscript")
-        else:
-            # TODO: implement
-            logger.warning("Return type not implemented")
-
-        return Undefined()
+        return handle_type_annotation(return_object)
 
     @classmethod
     def get_parameters(cls, args):
@@ -98,21 +72,16 @@ class Function(Instance):
                 # DISCUSS: handle class functions in here?
                 continue
             else:
-                if isinstance(arg.annotation, ast.Name):
-                    dtype = DataType.handle_ast(obj=arg.annotation.id)
-                elif arg.annotation is None:
-                    dtype = Undefined()
-                else:
-                    raise NotImplementedError()
+                dtype = handle_type_annotation(arg.annotation)
 
-            parameter = Parameter(name=arg.arg, type=dtype)
+            parameter = Parameter(name=arg.arg, dtype=dtype)
             parameters.append(parameter)
 
         return parameters
 
     def __str__(self) -> str:
         str_representation = f"{self.name}({', '.join([str(param) for param in self.parameters])})"
-        if self.return_type is not None:
+        if not isinstance(self.return_type, Undefined):
             str_representation += f" -> {self.return_type}"
         return indicate_access_level(str_representation)
 
@@ -219,6 +188,6 @@ class Class(Instance):
     def __str__(self) -> str:
         name = self.name
         inheritance = "inheritance: " + ", ".join([inh for inh in self.inherits_from])
-        functions = "functions: " + ", ".join([str(func) for func in self.functions])
         attributes = "attributes: " + str(self.attributes)
-        return f"{name}: \n {inheritance}; \n {functions}; \n {attributes}"
+        functions = "functions: " + ", ".join([str(func) for func in self.functions])
+        return f"{name}: \n {inheritance}; \n {attributes}; \n {functions}"
