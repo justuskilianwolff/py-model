@@ -13,3 +13,8 @@ class TypeHintableValue(ABC):
             return f"{self.name}"
         else:
             return f"{self.name}: {self.dtype}"
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return (self.name == other.name) and (self.dtype.__class__ == other.dtype.__class__)

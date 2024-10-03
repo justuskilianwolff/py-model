@@ -43,3 +43,8 @@ class Attributes:
 
     def __str__(self) -> str:
         return ", ".join([str(attr) for attr in self.attributes])
+    
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return vars(self) == vars(other)

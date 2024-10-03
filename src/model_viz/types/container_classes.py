@@ -31,6 +31,11 @@ class Instance:
                 classes.append(Class.from_ast(body_item))
 
         return functions, classes
+    
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return vars(self) == vars(other)
 
 
 class Function(Instance):
