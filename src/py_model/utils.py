@@ -115,6 +115,7 @@ def handle_type_annotation(annotation) -> DataType:
     else:
         raise MissingImplementationError("Type annotation not implemented")
 
+
 def set_project_name(name: str) -> None:
     """
     Set the project name for the files and in the file content to not manually change from the template.

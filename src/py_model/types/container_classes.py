@@ -105,8 +105,8 @@ class Class(Instance):
         is_dataclass: bool,
         inherits_from: list[str],
         attributes: Attributes,
-        functions: list[Function],
-        classes: list[Class],
+        functions: list[Function] = [],
+        classes: list[Class] = [],
     ) -> None:
         self.name = name
         self.is_dataclass: bool = is_dataclass

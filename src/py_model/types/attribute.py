@@ -5,6 +5,7 @@ import ast
 from py_model.datatypes import Undefined
 from py_model.errors import MissingImplementationError
 from py_model.utils import handle_type_annotation, indicate_access_level
+from py_model.visitors import AttributeVisitor
 
 from .typehintablevalue import TypeHintableValue
 
@@ -33,19 +34,28 @@ class Attribute(TypeHintableValue):
 
     @classmethod
     def handle_assign(cls, node: ast.Assign) -> list[Attribute]:
-        attributes = []
-        for target in node.targets:
-            # check that this actually is a self. attribute
-            if isinstance(target, ast.Attribute):
-                if isinstance(target.value, ast.Name):
-                    if target.value.id != "self":
-                        continue
+        def handle_attribute(attr: ast.Attribute) -> Attribute | None:
+            # obtain name
+            name = attr.attr
+
+            if isinstance(attr.value, ast.Name):
+                if (attr.value.id == "self") and isinstance(attr.ctx, ast.Store):
+                    # if it is not a member of store we can ignore it (otherwise we add functions as an attribute)
+                    return Attribute(name=name, dtype=Undefined())
                 else:
-                    raise MissingImplementationError()
+                    return None
+            else:
+                raise MissingImplementationError()
 
-                name = target.attr
+        attributes = []
 
-                # add attribute to list
-                attributes.append(Attribute(name=name, dtype=Undefined()))
+        # extract all ast.Attribute nodes
+        attribute_visitor = AttributeVisitor()
+        attribute_visitor.visit(node)
+
+        for attr in attribute_visitor.attributes:
+            attribute = handle_attribute(attr)
+            if attribute:
+                attributes.append(attribute)
 
         return attributes

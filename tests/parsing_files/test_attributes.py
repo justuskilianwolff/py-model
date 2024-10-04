@@ -1,7 +1,7 @@
 import ast
 
 from py_model.datatypes import String, Undefined
-from py_model.types import Attribute
+from py_model.types import Attribute, Attributes
 
 
 def test_creation_attribute():
@@ -39,3 +39,25 @@ def test_handle_assign():
     expected = Attribute(name="x", dtype=Undefined())
 
     assert created == expected
+
+
+def test_adding_attribute():
+    attribute = Attribute(name="name", dtype=Undefined())
+
+    attributes = Attributes(attributes=[attribute])
+
+    attribute_with_th = Attribute(name="name", dtype=String())
+
+    attributes.add_attribute(new_attr=attribute_with_th)
+
+    # we excpet only one attribute
+    assert len(attributes.attributes) == 1
+    assert attributes.attributes[0] == attribute_with_th
+
+    # lets do it the other way around
+    attributes = Attributes(attributes=[attribute_with_th])
+    attributes.add_attribute(new_attr=attribute)
+
+    # we excpet only one attribute
+    assert len(attributes.attributes) == 1
+    assert attributes.attributes[0] == attribute_with_th

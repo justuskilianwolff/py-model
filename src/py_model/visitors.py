@@ -28,3 +28,13 @@ class OuterAssignVisitor(AssignVisitor):
             super().generic_visit(node)
         else:
             pass
+
+
+class AttributeVisitor(ast.NodeVisitor):
+    """Visitor to find all attributes in a class."""
+
+    def __init__(self):
+        self.attributes: list[ast.Attribute] = []
+
+    def visit_Attribute(self, node: ast.Attribute):
+        self.attributes.append(node)
