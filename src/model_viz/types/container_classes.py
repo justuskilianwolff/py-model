@@ -20,6 +20,11 @@ class Instance:
         self.functions: list[Function] = functions
         self.classes: list[Class] = classes
 
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return vars(self) == vars(other)
+
     @classmethod
     def get_functions_and_classes(cls, body) -> tuple[list[Function], list[Class]]:
         functions = []
@@ -31,11 +36,6 @@ class Instance:
                 classes.append(Class.from_ast(body_item))
 
         return functions, classes
-    
-    def __eq__(self, other):
-        if not isinstance(other, self.__class__):
-            return NotImplemented
-        return vars(self) == vars(other)
 
 
 class Function(Instance):
@@ -86,6 +86,8 @@ class Function(Instance):
 
     def __str__(self) -> str:
         str_representation = f"{self.name}({', '.join([str(param) for param in self.parameters])})"
+
+        # if return type is not Undefined, add it to the string representation
         if not isinstance(self.return_type, Undefined):
             str_representation += f" -> {self.return_type}"
         return indicate_access_level(str_representation)
@@ -157,7 +159,7 @@ class Class(Instance):
             for body_item in body:
                 # TODO: check that dataclass can only have annotated assignments
                 if isinstance(body_item, ast.AnnAssign):
-                    attribute = Attribute.handle_annotated_assignment(body_item, is_dataclass=is_dataclass)
+                    attribute = Attribute.handle_annotated_assignment(body_item)
                     attributes.add_attribute(attribute=attribute)
                 else:
                     # no more variable definitions in data class 'style' hence we can break
@@ -181,7 +183,7 @@ class Class(Instance):
             general_assign_visitor.visit(init_method)
 
             for node in general_assign_visitor.ann_assigns:
-                attribute = Attribute.handle_annotated_assignment(node, is_dataclass=False)
+                attribute = Attribute.handle_annotated_assignment(node)
                 attributes.add_attribute(attribute=attribute)
 
             # handle assigns

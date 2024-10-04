@@ -16,7 +16,7 @@ class AssignVisitor(ast.NodeVisitor):
 
 
 class OuterAssignVisitor(AssignVisitor):
-    """Visitor to find all assignments in a class but no subclasses."""
+    """Visitor to find all assignments in a class but not within a subclasses."""
 
     def __init__(self, class_name: str):
         self.class_name = class_name

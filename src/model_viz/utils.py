@@ -38,6 +38,7 @@ def indicate_access_level(name: str) -> str:
 
 
 def determine_is_dataclass(class_def: ast.ClassDef) -> bool:
+    """Determine if a class is a dataclass."""
     is_dataclass = False
     for dec in class_def.decorator_list:
         if isinstance(dec, ast.Name):
@@ -45,16 +46,6 @@ def determine_is_dataclass(class_def: ast.ClassDef) -> bool:
                 is_dataclass = True
                 break
     return is_dataclass
-
-
-MATCHING = {
-    "None": NoneType(),
-    "int": Integer(),
-    "float": Float(),
-    "str": String(),
-    "tuple": Tuple(),
-    "Enum": Enumeration(),
-}
 
 
 def handle_type_annotation(annotation) -> DataType:
@@ -66,6 +57,14 @@ def handle_type_annotation(annotation) -> DataType:
         return NoneType()
     elif isinstance(annotation, ast.Name):
         # Datatype was specified, e.g.: function() -> str:
+        MATCHING = {
+            "None": NoneType(),
+            "int": Integer(),
+            "float": Float(),
+            "str": String(),
+            "tuple": Tuple(),
+            "Enum": Enumeration(),
+        }
         try:
             return MATCHING[annotation.id]
         except KeyError:
