@@ -5,10 +5,12 @@ from py_model.datatypes import (
     Boolean,
     CustomClass,
     DataType,
+    Dict,
     Float,
     Integer,
     List,
     NoneType,
+    Set,
     String,
     Tuple,
     Undefined,
@@ -90,8 +92,12 @@ def handle_type_annotation(annotation) -> DataType:
             elif value.id == "tuple":
                 # tuple Datatype, e.g.: function -> tuple[str, int]:
                 return Tuple(dtypes=dtypes)
+            elif value.id == "dict":
+                return Dict(dtypes=dtypes)
+            elif value.id == "set":
+                return Set(dtypes=dtypes)
             else:
-                raise MissingImplementationError("Neither list nor tuple, not implemented.")
+                raise MissingImplementationError(f"Neither list nor tuple, not implemented for {value.id}.")
         else:
             raise MissingImplementationError("Subscript type not implemented")
 

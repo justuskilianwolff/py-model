@@ -18,24 +18,37 @@ class Sequence:
 class NotEmptySequence(Sequence):
     """A class that represents a sequence of data types that is not empty."""
 
-    def __init__(self, dtypes: list[DataType | str]) -> None:
+    def __init__(self, dtypes: list[DataType]) -> None:
         self.dtypes = dtypes
 
 
-class Tuple(DataType, Sequence):
-    def __init__(self, dtypes: list[DataType] | None = None) -> None:
+class BaseSequence(DataType, Sequence):
+    def __init__(self, dtypes: list[DataType] | DataType | None = None) -> None:
+        if isinstance(dtypes, DataType):
+            dtypes = [dtypes]
         super().__init__(dtypes)
 
 
-class List(DataType, Sequence):
-    def __init__(self, dtypes: list[DataType] | None = None) -> None:
-        super().__init__(dtypes)
+class Tuple(BaseSequence):
+    pass
+
+
+class List(BaseSequence):
+    pass
+
+
+class Dict(BaseSequence):
+    pass
+
+
+class Set(BaseSequence):
+    pass
 
 
 class Union(NotEmptySequence, DataType):
     """A class that represents a union of data types."""
 
-    def __init__(self, dtypes: list[DataType | str]) -> None:
+    def __init__(self, dtypes: list[DataType]) -> None:
         super().__init__(dtypes)
 
     def __str__(self) -> str:

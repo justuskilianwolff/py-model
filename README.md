@@ -49,16 +49,17 @@ Following data types are supported, with their equivalent in other languages
 - int
 - float
 - str
+- dict
 - list
 - tuple
+-  set 
 - class
 
 Following conjunctions are supported:
 - union: | (please rewrite `Optional[int]` to `int | None`)
 
 #### Not supported
-- dict (planned)
-- set (planned)
+
 - Enum (planned)
 - complex
 - frozenset

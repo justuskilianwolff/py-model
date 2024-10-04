@@ -2,7 +2,7 @@ import os
 from dataclasses import dataclass
 
 from py_model.building_blocks import Attribute, Attributes, Class, Function, Parameter
-from py_model.datatypes import Boolean, Integer, List, String, Tuple, Undefined
+from py_model.datatypes import Boolean, Dict, Integer, List, Set, String, Tuple, Undefined
 from py_model.navigation import get_classes
 
 filepath = os.path.abspath(__file__)
@@ -16,10 +16,18 @@ class DataClass:
 
 
 @dataclass
-class Nested:
-    name: list[tuple[tuple[int, str], list[str]]]
+class Sequences:
+    names: list[str]
+    numbers: tuple[int, int]
+    pairs: dict[str, str]
+    set_int: set[int]
 
-    def greet(self, arg: list[tuple[tuple[int, str], list[str]]]) -> str:
+
+@dataclass
+class Nested:
+    name: list[dict[tuple[int, str], list[str]]]
+
+    def greet(self, arg: dict[tuple[tuple[int, str], list[str]], list[int]]) -> str:
         return f"Hello {self.name}"
 
 
@@ -55,21 +63,45 @@ def test_data_class():
     assert created == expected
 
 
+def test_sequences():
+    # what we expect to get
+    expected: Class = Class(
+        name="Sequences",
+        attributes=Attributes(
+            attributes=[
+                Attribute(name="names", dtype=List([String()])),
+                Attribute(name="numbers", dtype=Tuple([Integer(), Integer()])),
+                Attribute(name="pairs", dtype=Dict([String(), String()])),
+                Attribute(name="set_int", dtype=Set([Integer()])),
+            ]
+        ),
+        is_dataclass=True,
+        inherits_from=[],
+    )
+
+    created = Class.from_ast(class_def=class_definitions[1])
+
+    assert created == expected
+
+
 def test_nested_annotation():
-    expected_annotation = List([Tuple([Tuple([Integer(), String()]), List([String()])])])
+    # expected annotations
+    name_annotation = List([Dict([Tuple([Integer(), String()]), List([String()])])])
+    arg_annotation = Dict([Tuple([Tuple([Integer(), String()]), List([String()])]), List([Integer()])])
+
     # what we expect to get
     expected: Class = Class(
         name="Nested",
-        attributes=Attributes(attributes=[Attribute(name="name", dtype=expected_annotation)]),
+        attributes=Attributes(attributes=[Attribute(name="name", dtype=name_annotation)]),
         is_dataclass=True,
         inherits_from=[],
         functions=[
-            Function(name="greet", parameters=[Parameter(name="arg", dtype=expected_annotation)], return_type=String())
+            Function(name="greet", parameters=[Parameter(name="arg", dtype=arg_annotation)], return_type=String())
         ],
         classes=[],
     )
 
-    created = Class.from_ast(class_def=class_definitions[1])
+    created = Class.from_ast(class_def=class_definitions[2])
 
     assert created == expected
 
@@ -87,7 +119,7 @@ def test_missing_annotation():
         functions=[Function(name="return_without_type", parameters=[], return_type=Undefined())],
     )
 
-    created = Class.from_ast(class_def=class_definitions[2])
+    created = Class.from_ast(class_def=class_definitions[3])
 
     assert created == expected
 
@@ -107,9 +139,9 @@ def test_complex_assignments():
         functions=[Function(name="return_tuples", parameters=[], return_type=Undefined())],
     )
 
-    created = Class.from_ast(class_def=class_definitions[3])
+    created = Class.from_ast(class_def=class_definitions[4])
 
     assert created == expected
 
 
-test_data_class()
+test_nested_annotation()
