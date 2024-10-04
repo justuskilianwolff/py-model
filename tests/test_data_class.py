@@ -1,13 +1,14 @@
 import os
+from dataclasses import dataclass
 
 from model_viz.datatypes import String, Undefined
 from model_viz.navigation import get_classes
 from model_viz.types import Attribute, Attributes, Class, Function
 
 
+@dataclass
 class Person:
-    def __init__(self, name: str):
-        self.name: str = name
+    name: str
 
     def greet(self):
         return f"Hello {self.name}"
@@ -18,7 +19,7 @@ def test_simple_class():
     class_expected: Class = Class(
         name="Person",
         attributes=Attributes(attributes=[Attribute(name="name", dtype=String())]),
-        is_dataclass=False,
+        is_dataclass=True,
         inherits_from=[],
         functions=[Function(name="greet", parameters=[], return_type=Undefined())],
         classes=[],

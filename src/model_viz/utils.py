@@ -71,9 +71,13 @@ def handle_type_annotation(annotation) -> DataType:
             # if not in matching, it is a custom class
             return CustomClass(name=annotation.id)
     elif isinstance(annotation, ast.Subscript):
-        # obtain value
-        value = annotation.value
+        # nested datatype like list or tuple, e.g.: function() -> list[str]:
+        value = annotation.value  # obtain value (tuple or list)
         if isinstance(annotation.slice, ast.Name):
+            # single instace of datatype, e.g.: function -> list[str]:
+            inner_dtypes = [handle_type_annotation(annotation.slice)]
+        elif isinstance(annotation.slice, ast.Subscript):
+            # nested list or tuple, e.g.: function -> list[list[str]]:
             inner_dtypes = [handle_type_annotation(annotation.slice)]
         else:
             inner_dtypes = [handle_type_annotation(inner_type) for inner_type in annotation.slice.elts]

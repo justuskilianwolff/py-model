@@ -9,6 +9,10 @@ class DataType:
             return NotImplemented
         return self.__class__ is other.__class__
 
+    def __repr__(self) -> str:
+        # for debugging
+        return self.__str__()
+
 
 class CustomClass(DataType):
     def __init__(self, name: str) -> None:

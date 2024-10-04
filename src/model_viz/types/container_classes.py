@@ -25,6 +25,9 @@ class Instance:
             return NotImplemented
         return vars(self) == vars(other)
 
+    def __repr__(self) -> str:
+        return self.__str__()
+
     @classmethod
     def get_functions_and_classes(cls, body) -> tuple[list[Function], list[Class]]:
         functions = []
