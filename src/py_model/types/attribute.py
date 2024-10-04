@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import ast
 
-from model_viz.datatypes import Undefined
-from model_viz.utils import handle_type_annotation, indicate_access_level
+from py_model.datatypes import Undefined
+from py_model.errors import MissingImplementationError
+from py_model.utils import handle_type_annotation, indicate_access_level
 
 from .typehintablevalue import TypeHintableValue
 
@@ -24,7 +25,7 @@ class Attribute(TypeHintableValue):
         elif isinstance(node.target, ast.Name):
             name = node.target.id
         else:
-            raise NotImplementedError()
+            raise MissingImplementationError()
 
         # get annotation
         dtype = handle_type_annotation(node.annotation)
@@ -36,8 +37,11 @@ class Attribute(TypeHintableValue):
         for target in node.targets:
             # check that this actually is a self. attribute
             if isinstance(target, ast.Attribute):
-                if target.value.id != "self":
-                    continue
+                if isinstance(target.value, ast.Name):
+                    if target.value.id != "self":
+                        continue
+                else:
+                    raise MissingImplementationError()
 
                 name = target.attr
 

@@ -2,7 +2,7 @@ import ast
 import os
 from ast import ClassDef
 
-from model_viz.logging import get_logger
+from py_model.logging import get_logger
 
 logger = get_logger(__name__)
 

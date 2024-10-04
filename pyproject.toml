@@ -1,5 +1,5 @@
 [project]
-name = "model-viz"
+name = "py-model"
 version = "0.1.0"
 description = "Add your description here"
 authors = [
@@ -29,7 +29,7 @@ dev-dependencies = [
 allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/model_viz"]
+packages = ["src/py_model"]
 
 [tool.ruff]
 line-length = 120

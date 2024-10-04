@@ -1,6 +1,7 @@
 import ast
+import os
 
-from model_viz.datatypes import (
+from py_model.datatypes import (
     CustomClass,
     DataType,
     Enumeration,
@@ -13,7 +14,8 @@ from model_viz.datatypes import (
     Undefined,
     Union,
 )
-from model_viz.logging import get_logger
+from py_model.errors import MissingImplementationError
+from py_model.logging import get_logger
 
 logger = get_logger(__name__)
 
@@ -80,16 +82,20 @@ def handle_type_annotation(annotation) -> DataType:
             # nested list or tuple, e.g.: function -> list[list[str]]:
             inner_dtypes = [handle_type_annotation(annotation.slice)]
         else:
+            # TODO: fix this
             inner_dtypes = [handle_type_annotation(inner_type) for inner_type in annotation.slice.elts]
-
-        if value.id == "list":
-            # list Datatype, e.g.: function -> list[str]:
-            return List(inner_dtypes=inner_dtypes)
-        elif value.id == "tuple":
-            # tuple Datatype, e.g.: function -> tuple[str, int]:
-            return Tuple(inner_dtypes=inner_dtypes)
+        if isinstance(value, ast.Name):
+            if value.id == "list":
+                # list Datatype, e.g.: function -> list[str]:
+                return List(inner_dtypes=inner_dtypes)
+            elif value.id == "tuple":
+                # tuple Datatype, e.g.: function -> tuple[str, int]:
+                return Tuple(inner_dtypes=inner_dtypes)
+            else:
+                raise MissingImplementationError("Neither list nor tuple, not implemented.")
         else:
-            raise NotImplementedError("Subscript type not implemented")
+            raise MissingImplementationError("Subscript type not implemented")
+
     elif isinstance(annotation, ast.BinOp):
         if isinstance(annotation.op, ast.BitOr):
             # make sure pipe is used for Union, e.g.: function() -> str | int:
@@ -101,8 +107,57 @@ def handle_type_annotation(annotation) -> DataType:
                 inner_dtypes.extend(left.inner_dtypes)
             if isinstance(right, Union):
                 inner_dtypes.extend(right.inner_dtypes)
+
             return Union(inner_dtypes=[left, right])
+
         else:
-            raise NotImplementedError("Binary operation not implemented")
+            raise MissingImplementationError("Binary operation not implemented")
     else:
-        raise NotImplementedError("Type annotation not implemented")
+        raise MissingImplementationError("Type annotation not implemented")
+
+def set_project_name(name: str) -> None:
+    """
+    Set the project name for the files and in the file content to not manually change from the template.
+    """
+
+    mapping = {"py-model": name, "py_model": name.replace("-", "_")}
+
+    dirs_to_remove = set()
+
+    for root, _, files in os.walk("."):
+        # skip all hidden directories
+        if "/." in root:
+            continue
+
+        for file in files:
+            file_path = os.path.join(root, file)
+            with open(file_path, "r", errors="ignore") as f:
+                content = f.read()
+
+            for old, new in mapping.items():
+                content = content.replace(old, new)
+
+            with open(file_path, "w") as f:
+                f.write(content)
+
+            # check if file needs moving
+            if any(key in file_path for key in mapping.keys()):
+                # move the file to the new name
+                new_file_path = file_path
+                for old, new in mapping.items():
+                    new_file_path = new_file_path.replace(old, new)
+
+                # create dirs if not exist
+                dirs_new = os.path.dirname(new_file_path)
+                os.makedirs(dirs_new, exist_ok=True)
+
+                # move file
+                os.rename(file_path, new_file_path)
+
+                # delete old dirs
+                dirs_old = os.path.dirname(file_path)
+                dirs_to_remove.add(dirs_old)
+
+    # remove old dirs
+    for dir_to_remove in dirs_to_remove:
+        os.removedirs(dir_to_remove)

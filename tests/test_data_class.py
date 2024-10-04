@@ -1,9 +1,9 @@
 import os
 from dataclasses import dataclass
 
-from model_viz.datatypes import String, Undefined
-from model_viz.navigation import get_classes
-from model_viz.types import Attribute, Attributes, Class, Function
+from py_model.datatypes import String, Undefined
+from py_model.navigation import get_classes
+from py_model.types import Attribute, Attributes, Class, Function
 
 
 @dataclass

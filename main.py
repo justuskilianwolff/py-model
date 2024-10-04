@@ -1,7 +1,7 @@
-from model_viz.logging import get_logger
-from model_viz.navigation import get_classes, get_filepath_set
-from model_viz.parser import parser
-from model_viz.types import Class
+from py_model.logging import get_logger
+from py_model.navigation import get_classes, get_filepath_set
+from py_model.parser import parser
+from py_model.types import Class
 
 args = parser.parse_args()
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Literal
 
-from model_viz.logging import get_logger
+from py_model.logging import get_logger
 
 from .attribute import Attribute
 

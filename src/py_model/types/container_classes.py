@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import ast
 
-from model_viz.datatypes import DataType, Undefined
-from model_viz.logging import get_logger
-from model_viz.utils import determine_is_dataclass, handle_type_annotation, indicate_access_level
-from model_viz.visitors import OuterAssignVisitor
+from py_model.datatypes import DataType, Undefined
+from py_model.logging import get_logger
+from py_model.utils import determine_is_dataclass, handle_type_annotation, indicate_access_level
+from py_model.visitors import OuterAssignVisitor
 
 from . import Attribute, Attributes, Parameter
 
