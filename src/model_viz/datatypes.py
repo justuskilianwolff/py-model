@@ -1,8 +1,13 @@
 from __future__ import annotations
 
+from typing import Any
+
 
 class DataType:
-    pass
+    def __eq__(self, other: Any) -> bool:
+        if not isinstance(other, DataType):
+            return NotImplemented
+        return self.__class__ is other.__class__
 
 
 class CustomClass(DataType):
@@ -11,6 +16,11 @@ class CustomClass(DataType):
 
     def __str__(self) -> str:
         return self.name
+
+    def __eq__(self, other: Any):
+        if not isinstance(other, CustomClass):
+            return NotImplemented
+        return self.name == other.name
 
 
 class Undefined(DataType):
@@ -44,7 +54,7 @@ class String(DataType):
 
 
 class Sequence:
-    def __init__(self, inner_dtypes: list[DataType | str] | None = None) -> None:
+    def __init__(self, inner_dtypes: list[DataType] | None = None) -> None:
         self.inner_dtypes = inner_dtypes
 
     def __str__(self) -> str:
@@ -61,12 +71,12 @@ class NotEmptySequence(Sequence):
 
 
 class Tuple(DataType, Sequence):
-    def __init__(self, inner_dtypes: list[DataType | str] | None = None) -> None:
+    def __init__(self, inner_dtypes: list[DataType] | None = None) -> None:
         super().__init__(inner_dtypes)
 
 
 class List(DataType, Sequence):
-    def __init__(self, inner_dtypes: list[DataType | str] | None = None) -> None:
+    def __init__(self, inner_dtypes: list[DataType] | None = None) -> None:
         super().__init__(inner_dtypes)
 
 

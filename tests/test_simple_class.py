@@ -1,14 +1,14 @@
-from model_viz.datatypes import String
+from model_viz.datatypes import String, Undefined
 from model_viz.navigation import get_classes
-from model_viz.types import Attribute, Attributes, Class
+from model_viz.types import Attribute, Attributes, Class, Function
 
 
 class Person:
     def __init__(self, name: str):
         self.name: str = name
 
-    # def greet(self):
-    #     return f"Hello {self.name}"
+    def greet(self):
+        return f"Hello {self.name}"
 
 
 def test_simple_class():
@@ -18,7 +18,7 @@ def test_simple_class():
         attributes=Attributes(attributes=[Attribute(name="name", dtype=String())]),
         is_dataclass=False,
         inherits_from=[],
-        functions=[],  # [Function(name="greet", parameters=[], return_type=Undefined())],
+        functions=[Function(name="greet", parameters=[], return_type=Undefined())],
         classes=[],
     )
 
@@ -28,6 +28,3 @@ def test_simple_class():
     class_created = Class.from_ast(class_def=class_def)
 
     assert class_created == class_expected
-
-
-test_simple_class()
