@@ -14,7 +14,7 @@ class Attribute(TypeHintableValue):
         return indicate_access_level(super().__str__())
 
     def has_type(self) -> bool:
-        return self.dtype is not None
+        return isinstance(self.dtype, Undefined)
 
     @classmethod
     def handle_annotated_assignment(cls, node: ast.AnnAssign) -> Attribute:

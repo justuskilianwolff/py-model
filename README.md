@@ -54,7 +54,6 @@ Following data types are supported, with their equivalent in other languages
 - tuple
 - dict
 - set
-- Enum
 - class
 
 Following conjunctions are suppoerte
@@ -84,4 +83,4 @@ be able to also plot and work with nested classes
 
 ### Miscalleneous
 - support for frozenset
-- 
+- support for Enum

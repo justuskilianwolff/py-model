@@ -163,7 +163,7 @@ class Class(Instance):
                 # TODO: check that dataclass can only have annotated assignments
                 if isinstance(body_item, ast.AnnAssign):
                     attribute = Attribute.handle_annotated_assignment(body_item)
-                    attributes.add_attribute(attribute=attribute)
+                    attributes.add_attribute(new_attr=attribute)
                 else:
                     # no more variable definitions in data class 'style' hence we can break
                     return attributes, body
@@ -187,7 +187,7 @@ class Class(Instance):
 
             for node in general_assign_visitor.ann_assigns:
                 attribute = Attribute.handle_annotated_assignment(node)
-                attributes.add_attribute(attribute=attribute)
+                attributes.add_attribute(new_attr=attribute)
 
             # handle assigns
             for node in general_assign_visitor.assigns:

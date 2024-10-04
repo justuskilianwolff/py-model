@@ -71,4 +71,4 @@ paths = ["."]
 ignore_decorators = ["@vulture_ignore"]
 
 [tool.coverage.run]
-source = ["."]
+source = ["src"]

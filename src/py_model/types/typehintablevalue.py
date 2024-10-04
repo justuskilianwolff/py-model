@@ -14,6 +14,9 @@ class TypeHintableValue(ABC):
         else:
             return f"{self.name}: {self.dtype}"
 
+    def __repr__(self) -> str:
+        return self.__str__()
+
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return NotImplemented
