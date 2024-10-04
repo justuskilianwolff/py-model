@@ -1,7 +1,7 @@
 import os
 from dataclasses import dataclass
 
-from py_model.datatypes import Integer, List, String, Tuple, Undefined
+from py_model.datatypes import Boolean, Integer, List, String, Tuple, Undefined
 from py_model.navigation import get_classes
 from py_model.types import Attribute, Attributes, Class, Function, Parameter
 
@@ -12,6 +12,7 @@ class_definitions = get_classes(filepath)
 @dataclass
 class DataClass:
     name: str
+    active: bool
 
 
 @dataclass
@@ -42,7 +43,9 @@ def test_data_class():
     # what we expect to get
     expected: Class = Class(
         name="DataClass",
-        attributes=Attributes(attributes=[Attribute(name="name", dtype=String())]),
+        attributes=Attributes(
+            attributes=[Attribute(name="name", dtype=String()), Attribute(name="active", dtype=Boolean())]
+        ),
         is_dataclass=True,
         inherits_from=[],
     )
@@ -107,3 +110,5 @@ def test_complex_assignments():
     created = Class.from_ast(class_def=class_definitions[3])
 
     assert created == expected
+
+test_data_class()

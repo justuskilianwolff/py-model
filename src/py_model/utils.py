@@ -2,9 +2,9 @@ import ast
 import os
 
 from py_model.datatypes import (
+    Boolean,
     CustomClass,
     DataType,
-    Enumeration,
     Float,
     Integer,
     List,
@@ -65,7 +65,7 @@ def handle_type_annotation(annotation) -> DataType:
             "float": Float(),
             "str": String(),
             "tuple": Tuple(),
-            "Enum": Enumeration(),
+            "bool": Boolean(),
         }
         try:
             return MATCHING[annotation.id]
