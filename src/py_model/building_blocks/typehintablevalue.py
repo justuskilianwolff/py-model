@@ -1,6 +1,6 @@
 from abc import ABC
 
-from py_model.datatypes import DataType, Undefined
+from py_model.datatypes.basic_ import DataType, Undefined
 
 
 class TypeHintableValue(ABC):

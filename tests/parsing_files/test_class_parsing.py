@@ -1,7 +1,7 @@
 import os
 from dataclasses import dataclass
 
-from py_model.datatypes import Boolean, Integer, List, String, Tuple, Undefined
+from py_model.datatypes.basic_ import Boolean, Integer, List, String, Tuple, Undefined
 from py_model.navigation import get_classes
 from py_model.building_blocks import Attribute, Attributes, Class, Function, Parameter
 

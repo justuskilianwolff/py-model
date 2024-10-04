@@ -48,16 +48,23 @@ Following data types are supported, with their equivalent in other languages
 - bool
 - int
 - float
-- complex
 - str
 - list
 - tuple
-- dict
-- set
 - class
 
-Following conjunctions are suppoerte
+Following conjunctions are supported:
 - union: | (please rewrite `Optional[int]` to `int | None`)
+
+#### Not supported
+- dict (planned)
+- set (planned)
+- Enum (planned)
+- complex
+- frozenset
+- range
+- bytes
+- bytearray
 
 ## Upcoming
 ### Cardinality
@@ -82,5 +89,3 @@ which would result in following plot:
 be able to also plot and work with nested classes
 
 ### Miscalleneous
-- support for frozenset
-- support for Enum

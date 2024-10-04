@@ -1,6 +1,6 @@
 import ast
 
-from py_model.datatypes import String, Undefined
+from py_model.datatypes.basic_ import String, Undefined
 from py_model.building_blocks import Attribute, Attributes
 
 

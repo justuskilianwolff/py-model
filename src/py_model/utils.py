@@ -1,7 +1,7 @@
 import ast
 import os
 
-from py_model.datatypes import (
+from py_model.datatypes.basic_ import (
     Boolean,
     CustomClass,
     DataType,
