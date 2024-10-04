@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 from py_model.datatypes import Boolean, Integer, List, String, Tuple, Undefined
 from py_model.navigation import get_classes
-from py_model.types import Attribute, Attributes, Class, Function, Parameter
+from py_model.building_blocks import Attribute, Attributes, Class, Function, Parameter
 
 filepath = os.path.abspath(__file__)
 class_definitions = get_classes(filepath)

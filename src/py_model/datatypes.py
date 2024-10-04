@@ -37,14 +37,14 @@ class NoneType(DataType):
         return "None"
 
 
-class Integer(DataType):
-    def __str__(self) -> str:
-        return "int"
-
-
 class Boolean(DataType):
     def __str__(self) -> str:
         return "bool"
+
+
+class Integer(DataType):
+    def __str__(self) -> str:
+        return "int"
 
 
 class Float(DataType):

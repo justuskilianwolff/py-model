@@ -61,11 +61,10 @@ def handle_type_annotation(annotation) -> DataType:
         # Datatype was specified, e.g.: function() -> str:
         MATCHING = {
             "None": NoneType(),
+            "bool": Boolean(),
             "int": Integer(),
             "float": Float(),
             "str": String(),
-            "tuple": Tuple(),
-            "bool": Boolean(),
         }
         try:
             return MATCHING[annotation.id]
