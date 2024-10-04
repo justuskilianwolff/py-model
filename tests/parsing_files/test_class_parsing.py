@@ -1,9 +1,9 @@
 import os
 from dataclasses import dataclass
 
-from py_model.datatypes.basic_ import Boolean, Integer, List, String, Tuple, Undefined
-from py_model.navigation import get_classes
 from py_model.building_blocks import Attribute, Attributes, Class, Function, Parameter
+from py_model.datatypes import Boolean, Integer, List, String, Tuple, Undefined
+from py_model.navigation import get_classes
 
 filepath = os.path.abspath(__file__)
 class_definitions = get_classes(filepath)
@@ -110,5 +110,6 @@ def test_complex_assignments():
     created = Class.from_ast(class_def=class_definitions[3])
 
     assert created == expected
+
 
 test_data_class()

@@ -1,7 +1,7 @@
 import ast
 import os
 
-from py_model.datatypes.basic_ import (
+from py_model.datatypes import (
     Boolean,
     CustomClass,
     DataType,
@@ -76,20 +76,20 @@ def handle_type_annotation(annotation) -> DataType:
         value = annotation.value  # obtain value (tuple or list)
         if isinstance(annotation.slice, ast.Name):
             # single instace of datatype, e.g.: function -> list[str]:
-            inner_dtypes = [handle_type_annotation(annotation.slice)]
+            dtypes = [handle_type_annotation(annotation.slice)]
         elif isinstance(annotation.slice, ast.Subscript):
             # nested list or tuple, e.g.: function -> list[list[str]]:
-            inner_dtypes = [handle_type_annotation(annotation.slice)]
+            dtypes = [handle_type_annotation(annotation.slice)]
         else:
             # TODO: fix this
-            inner_dtypes = [handle_type_annotation(inner_type) for inner_type in annotation.slice.elts]
+            dtypes = [handle_type_annotation(inner_type) for inner_type in annotation.slice.elts]
         if isinstance(value, ast.Name):
             if value.id == "list":
                 # list Datatype, e.g.: function -> list[str]:
-                return List(inner_dtypes=inner_dtypes)
+                return List(dtypes=dtypes)
             elif value.id == "tuple":
                 # tuple Datatype, e.g.: function -> tuple[str, int]:
-                return Tuple(inner_dtypes=inner_dtypes)
+                return Tuple(dtypes=dtypes)
             else:
                 raise MissingImplementationError("Neither list nor tuple, not implemented.")
         else:
@@ -98,16 +98,16 @@ def handle_type_annotation(annotation) -> DataType:
     elif isinstance(annotation, ast.BinOp):
         if isinstance(annotation.op, ast.BitOr):
             # make sure pipe is used for Union, e.g.: function() -> str | int:
-            inner_dtypes = []
+            dtypes = []
             # obtain left and right dtypes
             left = handle_type_annotation(annotation.left)
             right = handle_type_annotation(annotation.right)
             if isinstance(left, Union):
-                inner_dtypes.extend(left.inner_dtypes)
+                dtypes.extend(left.dtypes)
             if isinstance(right, Union):
-                inner_dtypes.extend(right.inner_dtypes)
+                dtypes.extend(right.dtypes)
 
-            return Union(inner_dtypes=[left, right])
+            return Union(dtypes=[left, right])
 
         else:
             raise MissingImplementationError("Binary operation not implemented")
