@@ -1,4 +1,4 @@
-from py_model.building_blocks import Class
+from py_model.parsing import Class
 from py_model.logging import get_logger
 from py_model.navigation import get_classes, get_filepath_set
 from py_model.parser import parser

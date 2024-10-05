@@ -1,7 +1,7 @@
 import ast
 
-from py_model.building_blocks import Attribute, Attributes
 from py_model.datatypes import String, Undefined
+from py_model.parsing import Attribute, Attributes
 
 
 def test_creation_attribute():
