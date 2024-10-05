@@ -10,10 +10,10 @@ Generate class diagrams or code in another programming language from you Python 
 - .ts: TypeScript
 
 # Usage
-- Quick Start
-- Installation
-- CLI
-- Supported Class Structures
+- [Quick Start](#quick-start)
+- [Installation](#installation)
+- [Command Line Interface (CLI)](#command-line-interface-cli)
+- [Supported Class Structures](#supported-class-structures)
 
 ## Quick Start
 Let's assume your file `models.py` contains following code: 
@@ -38,9 +38,15 @@ python -m py-model --files models.py --output models.ts
 this would then create following `models.ts` file:
 ```typescript
 class Person {
-
+ #TODO
 }
 ```
+or to generate a class diagram
+```shell
+python -m py-model --files models.py --output models.png
+```
+#TODO
+
 ## Installation
 Install py-model with your common package manager. For `pip` this would look like
 ```shell
