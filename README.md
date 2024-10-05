@@ -113,9 +113,9 @@ Not implemented yet, but planned and listed in their order of planned implementa
 
 
 # Planned Features
-> "Never. Ever. Buy a tech prouct based on the promise of future software updates - Marques Brownlee, around 2021
+> "Never. Ever. Buy a tech prouct based on the promise of future software updates." - Marques Brownlee, around 2021
 
-Lucky you, it's open source... 👀 These are the planned features for future versions.
+Lucky you, it's open source... 👀 These are the planned features for future versions:
 ## Graphs
 ### Cardinality
 Additional cardsupport for class diagrams, where 
