@@ -79,12 +79,15 @@ def handle_type_annotation(annotation) -> DataType:
         if isinstance(annotation.slice, ast.Name):
             # single instace of datatype, e.g.: function -> list[str]:
             dtypes = [handle_type_annotation(annotation.slice)]
+        elif isinstance(annotation.slice, ast.Tuple):
+            # multiple instances of datatype, e.g.: function -> list[str, int]:
+            dtypes = [handle_type_annotation(inner_type) for inner_type in annotation.slice.elts]
         elif isinstance(annotation.slice, ast.Subscript):
             # nested list or tuple, e.g.: function -> list[list[str]]:
             dtypes = [handle_type_annotation(annotation.slice)]
         else:
-            # TODO: fix this
-            dtypes = [handle_type_annotation(inner_type) for inner_type in annotation.slice.elts]
+            raise MissingImplementationError("Subscript slice not implemented")
+
         if isinstance(value, ast.Name):
             if value.id == "list":
                 # list Datatype, e.g.: function -> list[str]:
