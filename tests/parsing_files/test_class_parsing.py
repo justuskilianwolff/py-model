@@ -1,9 +1,9 @@
 import os
 from dataclasses import dataclass
 
-from py_model.datatypes import Boolean, Dict, Integer, List, Set, String, Tuple, Undefined
 from py_model.navigation import get_classes
 from py_model.parsing import Attribute, Attributes, Class, Function, Parameter
+from py_model.type_hints import Boolean, Dict, Integer, List, Set, String, Tuple, Undefined
 
 filepath = os.path.abspath(__file__)
 class_definitions = get_classes(filepath)

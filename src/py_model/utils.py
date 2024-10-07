@@ -1,10 +1,9 @@
 import ast
 import os
 
-from py_model.datatypes import (
+from py_model.type_hints import (
     Boolean,
     CustomClass,
-    DataType,
     Dict,
     Float,
     Integer,
@@ -13,6 +12,7 @@ from py_model.datatypes import (
     Set,
     String,
     Tuple,
+    TypeHint,
     Undefined,
     Union,
 )
@@ -52,7 +52,7 @@ def determine_is_dataclass(class_def: ast.ClassDef) -> bool:
     return is_dataclass
 
 
-def handle_type_annotation(annotation) -> DataType:
+def handle_type_annotation(annotation) -> TypeHint:
     if annotation is None:
         # no return type specified: function():
         return Undefined()

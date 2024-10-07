@@ -1,6 +1,6 @@
 import ast
 
-from py_model.datatypes import String, Undefined
+from py_model.type_hints import String, Undefined
 from py_model.parsing import Attribute, Attributes
 
 

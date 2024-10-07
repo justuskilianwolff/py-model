@@ -1,12 +1,12 @@
 from abc import ABC
 
-from py_model.datatypes.basic_types import DataType, Undefined
+from py_model.type_hints.basic_types import TypeHint, Undefined
 
 
 class TypeHintableValue(ABC):
     """A class that can be used to represent a value that has a type hint, like an attribute or a parameter."""
 
-    def __init__(self, name: str, dtype: DataType) -> None:
+    def __init__(self, name: str, dtype: TypeHint) -> None:
         self.name = name
         self.dtype = dtype
 

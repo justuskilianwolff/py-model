@@ -3,9 +3,9 @@ from __future__ import annotations
 from typing import Any
 
 
-class DataType:
+class TypeHint:
     def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, DataType):
+        if not isinstance(other, TypeHint):
             return NotImplemented
         return self.__class__ is other.__class__
 
@@ -14,7 +14,7 @@ class DataType:
         return self.__str__()
 
 
-class CustomClass(DataType):
+class CustomClass(TypeHint):
     def __init__(self, name: str) -> None:
         self.name = name
 
@@ -27,31 +27,31 @@ class CustomClass(DataType):
         return self.name == other.name
 
 
-class Undefined(DataType):
+class Undefined(TypeHint):
     def __str__(self) -> str:
         return ""
 
 
-class NoneType(DataType):
+class NoneType(TypeHint):
     def __str__(self) -> str:
         return "None"
 
 
-class Boolean(DataType):
+class Boolean(TypeHint):
     def __str__(self) -> str:
         return "bool"
 
 
-class Integer(DataType):
+class Integer(TypeHint):
     def __str__(self) -> str:
         return "int"
 
 
-class Float(DataType):
+class Float(TypeHint):
     def __str__(self) -> str:
         return "float"
 
 
-class String(DataType):
+class String(TypeHint):
     def __str__(self) -> str:
         return "string"

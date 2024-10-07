@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import ast
 
-from py_model.datatypes.basic_types import DataType, Undefined
+from py_model.type_hints.basic_types import TypeHint, Undefined
 from py_model.logging import get_logger
 from py_model.utils import determine_is_dataclass, handle_type_annotation, indicate_access_level
 from py_model.visitors import OuterAssignVisitor
@@ -46,13 +46,13 @@ class Function(Instance):
         self,
         name: str,
         parameters: list[Parameter],
-        return_type: DataType,
+        return_type: TypeHint,
         functions: list[Function] = [],
         classes: list[Class] = [],
     ) -> None:
         self.name = name
         self.parameters: list[Parameter] = parameters
-        self.return_type: DataType = return_type
+        self.return_type: TypeHint = return_type
         self.functions: list[Function] = functions
         self.classes: list[Class] = classes
 
@@ -63,12 +63,12 @@ class Function(Instance):
         return_type = cls.get_return_type(fun.returns)
 
         # generate lists of functions and classes
-        functions, classes = Instance.get_functions_and_classes(fun.body)
+        functions, classes = cls.get_functions_and_classes(fun.body)
 
         return cls(name=name, parameters=parameters, return_type=return_type, functions=functions, classes=classes)
 
     @classmethod
-    def get_return_type(cls, return_object) -> DataType:
+    def get_return_type(cls, return_object) -> TypeHint:
         return handle_type_annotation(return_object)
 
     @classmethod
