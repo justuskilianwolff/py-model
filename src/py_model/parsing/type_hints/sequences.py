@@ -1,12 +1,34 @@
+from py_model.parsing import BuildingBlock
+
 from .basic_types import TypeHint
 
 
-class TypeHintSequence(TypeHint):
-    """A class that represents a typehint than can hold a list of type hints."""
+class SingleContainer(TypeHint, BuildingBlock):
+    """A container that can hold a single dtype"""
 
-    def __init__(self, dtypes: list[TypeHint] | TypeHint | None = None) -> None:
-        if isinstance(dtypes, TypeHint):
-            dtypes = [dtypes]
+    def __init__(self, dtype: list[TypeHint] | TypeHint | None = None) -> None:
+        if isinstance(dtype, list):
+            if len(dtype) != 1:
+                raise ValueError("SingleContainer must have exactly one type hint (or None)")
+            else:
+                self.dtype = dtype[0]
+        else:
+            self.dtype = dtype
+
+    def __str__(self) -> str:
+        container = self.__class__.__name__.lower()
+        if self.dtype is None:
+            return container
+        else:
+            return f"{container}[{self.dtype}]"
+
+
+class DoubleContainer(TypeHint, BuildingBlock):
+    """ "can excatlly hold two dtypes"""
+
+    def __init__(self, dtypes: list[TypeHint] | None = None) -> None:
+        if (dtypes is not None) and (len(dtypes) != 2):
+            raise ValueError("DoubleContainer must have exactly two type hints (or None)")
 
         self.dtypes = dtypes
 
@@ -15,23 +37,40 @@ class TypeHintSequence(TypeHint):
         if self.dtypes is None:
             return container
         else:
-            return f'{container}[{", ".join(str(dtype) for dtype in self.dtypes)}]'
+            return f"{container}[{self.dtypes[0]}, {self.dtypes[1]}]"
 
 
-class Tuple(TypeHintSequence):
-    pass
+class Tuple(DoubleContainer):
+    def typescript(self) -> str:
+        print(f'{self.dtypes}, {type(self.dtypes)}')
+        if self.dtypes is None:
+            raise ValueError("Tuple must have at least one type hint for conversion to Typescript.")
+        else:
+            return f"[{', '.join(dtype.typescript() for dtype in self.dtypes)}]"
 
 
-class List(TypeHintSequence):
-    pass
+class List(SingleContainer):
+    def typescript(self) -> str:
+        if self.dtype is None:
+            raise ValueError("List must have at least one type hint for conversion to Typescript.")
+        else:
+            return f"Array<{self.dtype.typescript()}>"
 
 
-class Dict(TypeHintSequence):
-    pass
+class Dict(DoubleContainer):
+    def typescript(self) -> str:
+        if self.dtypes is None:
+            raise ValueError("Dict must have type hints for conversion to Typescript.")
+        else:
+            return f"Map<{self.dtypes[0].typescript()}, {self.dtypes[1].typescript()}>"
 
 
-class Set(TypeHintSequence):
-    pass
+class Set(SingleContainer):
+    def typescript(self) -> str:
+        if self.dtype is None:
+            raise ValueError("Dict must have type hints for conversion to Typescript.")
+        else:
+            return f"Set<{self.dtype.typescript()}>"
 
 
 class Union(TypeHint):

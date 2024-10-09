@@ -9,7 +9,7 @@ from py_model.visitors import OuterAssignVisitor
 from py_model.writing import SupportedTypes
 
 from . import Attribute, Attributes, Parameter
-from .type_hints.basic_types import TypeHint, Undefined
+from .type_hints.basic_types import NoneType, TypeHint, Undefined
 
 logger = get_logger(__name__)
 
@@ -100,7 +100,7 @@ class Function(Instance):
     def typescript(self) -> str:
         params = ", ".join([param.get_string(supported_type=SupportedTypes.ts) for param in self.parameters])
 
-        if isinstance(self.return_type, Undefined):
+        if isinstance(self.return_type, (Undefined, NoneType)):
             ret = "void"
         else:
             ret = self.return_type.get_string(supported_type=SupportedTypes.ts)
@@ -226,7 +226,7 @@ class Class(Instance):
                 string_repr += f"{inheritance}, "
 
             # remove last character (the comma)
-            string_repr = string_repr[:-1]
+            string_repr = string_repr[:-2]
 
         string_repr += "{ \n"
 
@@ -236,7 +236,7 @@ class Class(Instance):
         for func in self.functions:
             string_repr += f"{func.get_string(supported_type=SupportedTypes.ts)} \n"
 
-        string_repr += "\n}"
+        string_repr += "}\n"
 
         return string_repr
 

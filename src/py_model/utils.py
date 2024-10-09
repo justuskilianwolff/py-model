@@ -91,14 +91,14 @@ def handle_type_annotation(annotation) -> TypeHint:
         if isinstance(value, ast.Name):
             if value.id == "list":
                 # list Datatype, e.g.: function -> list[str]:
-                return List(dtypes=dtypes)
+                return List(dtype=dtypes)
             elif value.id == "tuple":
                 # tuple Datatype, e.g.: function -> tuple[str, int]:
                 return Tuple(dtypes=dtypes)
             elif value.id == "dict":
                 return Dict(dtypes=dtypes)
             elif value.id == "set":
-                return Set(dtypes=dtypes)
+                return Set(dtype=dtypes)
             else:
                 raise MissingImplementationError(f"Neither list nor tuple, not implemented for {value.id}.")
         else:

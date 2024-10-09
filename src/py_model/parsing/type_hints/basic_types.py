@@ -39,6 +39,9 @@ class Undefined(TypeHint):
     def __str__(self) -> str:
         return ""
 
+    def typescript(self) -> str:
+        raise ValueError("Type hints must be specified for converting to Typescript")
+
 
 class NoneType(TypeHint):
     def __str__(self) -> str:
