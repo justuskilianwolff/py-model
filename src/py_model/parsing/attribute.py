@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import ast
 
-from py_model.type_hints import Undefined
 from py_model.errors import MissingImplementationError
 from py_model.utils import handle_type_annotation, indicate_access_level
 from py_model.visitors import AttributeVisitor
 
+from .type_hints import Undefined
 from .typehintablevalue import TypeHintableValue
 
 

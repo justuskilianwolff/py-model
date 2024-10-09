@@ -1,7 +1,7 @@
 import ast
 
-from py_model.type_hints import String, Undefined
 from py_model.parsing import Attribute, Attributes
+from py_model.parsing.type_hints import String, Undefined
 
 
 def test_creation_attribute():

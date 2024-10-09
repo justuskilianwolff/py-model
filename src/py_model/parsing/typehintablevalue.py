@@ -1,6 +1,6 @@
 from abc import ABC
 
-from py_model.type_hints.basic_types import TypeHint, Undefined
+from .type_hints.basic_types import TypeHint, Undefined
 
 
 class TypeHintableValue(ABC):

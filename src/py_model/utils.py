@@ -1,7 +1,9 @@
 import ast
 import os
 
-from py_model.type_hints import (
+from py_model.errors import MissingImplementationError
+from py_model.logging import get_logger
+from py_model.parsing.type_hints import (
     Boolean,
     CustomClass,
     Dict,
@@ -16,8 +18,6 @@ from py_model.type_hints import (
     Undefined,
     Union,
 )
-from py_model.errors import MissingImplementationError
-from py_model.logging import get_logger
 
 logger = get_logger(__name__)
 

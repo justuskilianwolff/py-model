@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import ast
 
-from py_model.type_hints.basic_types import TypeHint, Undefined
 from py_model.logging import get_logger
 from py_model.utils import determine_is_dataclass, handle_type_annotation, indicate_access_level
 from py_model.visitors import OuterAssignVisitor
 
 from . import Attribute, Attributes, Parameter
+from .type_hints.basic_types import TypeHint, Undefined
 
 logger = get_logger(__name__)
 
