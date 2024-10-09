@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from typing import Any
 
+from py_model.parsing import BuildingBlock
 
-class TypeHint:
+
+class TypeHint(BuildingBlock):
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, TypeHint):
             return NotImplemented
@@ -11,6 +13,12 @@ class TypeHint:
 
     def __repr__(self) -> str:
         # for debugging
+        return self.__str__()
+
+    def typescript(self) -> str:
+        return self.__str__()
+
+    def dot(self) -> str:
         return self.__str__()
 
 
@@ -36,20 +44,35 @@ class NoneType(TypeHint):
     def __str__(self) -> str:
         return "None"
 
+    def typescript(self, return_type: bool) -> str:
+        if return_type:
+            return "void"
+        else:
+            return "null"
+
 
 class Boolean(TypeHint):
     def __str__(self) -> str:
         return "bool"
+
+    def typescript(self) -> str:
+        return "boolean"
 
 
 class Integer(TypeHint):
     def __str__(self) -> str:
         return "int"
 
+    def typescript(self) -> str:
+        return "number"
+
 
 class Float(TypeHint):
     def __str__(self) -> str:
         return "float"
+
+    def typescript(self) -> str:
+        return "number"
 
 
 class String(TypeHint):
