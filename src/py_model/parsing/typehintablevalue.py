@@ -1,4 +1,5 @@
 from py_model.parsing import BuildingBlock
+from py_model.writing import SupportedTypes
 
 from .type_hints.basic_types import TypeHint, Undefined
 
@@ -14,7 +15,7 @@ class TypeHintableValue(BuildingBlock):
         return f"{self.name}: {self.dtype}"
 
     def typescript(self) -> str:
-        return self.dot() + ";"
+        return f"{self.name}: {self.dtype.get_string(supported_type=SupportedTypes.ts)}"
 
     def __str__(self) -> str:
         if isinstance(self.dtype, Undefined):

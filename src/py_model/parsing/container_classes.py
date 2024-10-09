@@ -3,8 +3,10 @@ from __future__ import annotations
 import ast
 
 from py_model.logging import get_logger
+from py_model.parsing import BuildingBlock
 from py_model.utils import determine_is_dataclass, handle_type_annotation, indicate_access_level
 from py_model.visitors import OuterAssignVisitor
+from py_model.writing import SupportedTypes
 
 from . import Attribute, Attributes, Parameter
 from .type_hints.basic_types import TypeHint, Undefined
@@ -12,7 +14,7 @@ from .type_hints.basic_types import TypeHint, Undefined
 logger = get_logger(__name__)
 
 
-class Instance:
+class Instance(BuildingBlock):
     """Parent of Function and Class"""
 
     def __init__(self, functions: list[Function] = [], classes: list[Class] = []) -> None:
@@ -94,6 +96,19 @@ class Function(Instance):
         if not isinstance(self.return_type, Undefined):
             str_representation += f" -> {self.return_type}"
         return indicate_access_level(str_representation)
+
+    def typescript(self) -> str:
+        params = ", ".join([param.get_string(supported_type=SupportedTypes.ts) for param in self.parameters])
+
+        if isinstance(self.return_type, Undefined):
+            ret = "void"
+        else:
+            ret = self.return_type.get_string(supported_type=SupportedTypes.ts)
+
+        return f"{self.name}({params}): {ret};"
+
+    def dot(self) -> str:
+        return self.__str__()
 
 
 class Class(Instance):
@@ -201,3 +216,29 @@ class Class(Instance):
         attributes = "attributes: " + str(self.attributes)
         functions = "functions: " + ", ".join([str(func) for func in self.functions])
         return f"{name}: \n {inheritance}; \n {attributes}; \n {functions}"
+
+    def typescript(self) -> str:
+        string_repr = f"interface {self.name} "
+
+        if len(self.inherits_from) >= 1:
+            string_repr += "extends "
+            for inheritance in self.inherits_from:
+                string_repr += f"{inheritance}, "
+
+            # remove last character (the comma)
+            string_repr = string_repr[:-1]
+
+        string_repr += "{ \n"
+
+        for attribute in self.attributes.attributes:
+            string_repr += f"{attribute.get_string(supported_type=SupportedTypes.ts)}; \n"
+
+        for func in self.functions:
+            string_repr += f"{func.get_string(supported_type=SupportedTypes.ts)} \n"
+
+        string_repr += "\n}"
+
+        return string_repr
+
+    def dot(self) -> str:
+        return self.__str__()

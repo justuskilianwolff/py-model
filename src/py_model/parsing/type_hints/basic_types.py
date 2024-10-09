@@ -44,11 +44,8 @@ class NoneType(TypeHint):
     def __str__(self) -> str:
         return "None"
 
-    def typescript(self, return_type: bool) -> str:
-        if return_type:
-            return "void"
-        else:
-            return "null"
+    def typescript(self) -> str:
+        return "null"
 
 
 class Boolean(TypeHint):
