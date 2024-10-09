@@ -160,7 +160,6 @@ class Class(Instance):
         if is_dataclass:
             # is dataclass - take variables in constructor
             for body_item in body:
-                # TODO: check that dataclass can only have annotated assignments
                 if isinstance(body_item, ast.AnnAssign):
                     attribute = Attribute.handle_annotated_assignment(body_item)
                     attributes.add_attribute(new_attr=attribute)
