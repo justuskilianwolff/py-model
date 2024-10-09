@@ -2,10 +2,12 @@ from __future__ import annotations
 
 from typing import Any
 
+from py_model.parsing import BuildingBlock
 
-class DataType:
+
+class TypeHint(BuildingBlock):
     def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, DataType):
+        if not isinstance(other, TypeHint):
             return NotImplemented
         return self.__class__ is other.__class__
 
@@ -13,8 +15,14 @@ class DataType:
         # for debugging
         return self.__str__()
 
+    def typescript(self) -> str:
+        return self.__str__()
 
-class CustomClass(DataType):
+    def dot(self) -> str:
+        return self.__str__()
+
+
+class CustomClass(TypeHint):
     def __init__(self, name: str) -> None:
         self.name = name
 
@@ -27,31 +35,46 @@ class CustomClass(DataType):
         return self.name == other.name
 
 
-class Undefined(DataType):
+class Undefined(TypeHint):
     def __str__(self) -> str:
         return ""
 
+    def typescript(self) -> str:
+        raise ValueError("Type hints must be specified for converting to Typescript")
 
-class NoneType(DataType):
+
+class NoneType(TypeHint):
     def __str__(self) -> str:
         return "None"
 
+    def typescript(self) -> str:
+        return "null"
 
-class Boolean(DataType):
+
+class Boolean(TypeHint):
     def __str__(self) -> str:
         return "bool"
 
+    def typescript(self) -> str:
+        return "boolean"
 
-class Integer(DataType):
+
+class Integer(TypeHint):
     def __str__(self) -> str:
         return "int"
 
+    def typescript(self) -> str:
+        return "number"
 
-class Float(DataType):
+
+class Float(TypeHint):
     def __str__(self) -> str:
         return "float"
 
+    def typescript(self) -> str:
+        return "number"
 
-class String(DataType):
+
+class String(TypeHint):
     def __str__(self) -> str:
         return "string"

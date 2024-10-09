@@ -2,17 +2,19 @@ from __future__ import annotations
 
 import ast
 
-from py_model.datatypes.basic_types import DataType, Undefined
 from py_model.logging import get_logger
+from py_model.parsing import BuildingBlock
 from py_model.utils import determine_is_dataclass, handle_type_annotation, indicate_access_level
 from py_model.visitors import OuterAssignVisitor
+from py_model.writing import SupportedTypes
 
 from . import Attribute, Attributes, Parameter
+from .type_hints.basic_types import NoneType, TypeHint, Undefined
 
 logger = get_logger(__name__)
 
 
-class Instance:
+class Instance(BuildingBlock):
     """Parent of Function and Class"""
 
     def __init__(self, functions: list[Function] = [], classes: list[Class] = []) -> None:
@@ -46,13 +48,13 @@ class Function(Instance):
         self,
         name: str,
         parameters: list[Parameter],
-        return_type: DataType,
+        return_type: TypeHint,
         functions: list[Function] = [],
         classes: list[Class] = [],
     ) -> None:
         self.name = name
         self.parameters: list[Parameter] = parameters
-        self.return_type: DataType = return_type
+        self.return_type: TypeHint = return_type
         self.functions: list[Function] = functions
         self.classes: list[Class] = classes
 
@@ -63,12 +65,12 @@ class Function(Instance):
         return_type = cls.get_return_type(fun.returns)
 
         # generate lists of functions and classes
-        functions, classes = Instance.get_functions_and_classes(fun.body)
+        functions, classes = cls.get_functions_and_classes(fun.body)
 
         return cls(name=name, parameters=parameters, return_type=return_type, functions=functions, classes=classes)
 
     @classmethod
-    def get_return_type(cls, return_object) -> DataType:
+    def get_return_type(cls, return_object) -> TypeHint:
         return handle_type_annotation(return_object)
 
     @classmethod
@@ -94,6 +96,19 @@ class Function(Instance):
         if not isinstance(self.return_type, Undefined):
             str_representation += f" -> {self.return_type}"
         return indicate_access_level(str_representation)
+
+    def typescript(self) -> str:
+        params = ", ".join([param.get_string(supported_type=SupportedTypes.ts) for param in self.parameters])
+
+        if isinstance(self.return_type, (Undefined, NoneType)):
+            ret = "void"
+        else:
+            ret = self.return_type.get_string(supported_type=SupportedTypes.ts)
+
+        return f"{self.name}({params}): {ret};"
+
+    def dot(self) -> str:
+        return self.__str__()
 
 
 class Class(Instance):
@@ -200,3 +215,29 @@ class Class(Instance):
         attributes = "attributes: " + str(self.attributes)
         functions = "functions: " + ", ".join([str(func) for func in self.functions])
         return f"{name}: \n {inheritance}; \n {attributes}; \n {functions}"
+
+    def typescript(self) -> str:
+        string_repr = f"interface {self.name} "
+
+        if len(self.inherits_from) >= 1:
+            string_repr += "extends "
+            for inheritance in self.inherits_from:
+                string_repr += f"{inheritance}, "
+
+            # remove last character (the comma)
+            string_repr = string_repr[:-2]
+
+        string_repr += "{ \n"
+
+        for attribute in self.attributes.attributes:
+            string_repr += f"{attribute.get_string(supported_type=SupportedTypes.ts)}; \n"
+
+        for func in self.functions:
+            string_repr += f"{func.get_string(supported_type=SupportedTypes.ts)} \n"
+
+        string_repr += "}\n"
+
+        return string_repr
+
+    def dot(self) -> str:
+        return self.__str__()

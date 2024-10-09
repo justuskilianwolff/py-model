@@ -12,38 +12,43 @@ Generate class diagrams or code in another programming language from you Python 
 # Usage
 - [Quick Start](#quick-start)
 - [Installation](#installation)
-- [Command Line Interface (CLI)](#command-line-interface-cli)
 - [Supported Class Structures](#supported-class-structures)
 
 ## Quick Start
 Let's assume your file `models.py` contains following code: 
 ```python
 class Person:
-    def __init__(name:str, age:int):
+    def __init__(self, name:str, age:int):
         self.name: str
         self.age: int
 
 class Developer(Person):
-    def __init__(name:str, age:int, languages: list[str]):
+    def __init__(self, name:str, age:int, languages: list[str]):
         super().__init__(name=name, age=age)
         self.languages: list[str] = languages
 
-    def brag() -> str:
+    def brag(self) -> str:
         return "Look at me, I know all these languages: " + ",".join(self.languages) + "."
 ```
-Create the file you want with specifying the file extension:
+Create the file you want with specifying the file extension (see above for supported extensions). Let's assume we want to create a TypeScript file, we then use .ts:
 ```shell
-python -m py-model --files models.py --output models.ts
+py-model --files models.py --output models.ts
 ```
-this would then create following `models.ts` file:
+which creates following `models.ts` file:
 ```typescript
-class Person {
- #TODO
+interface Person {
+  name: string;
+  age: number;
+}
+
+interface Developer extends Person {
+  languages: Array<string>;
+  brag(): string;
 }
 ```
-or to generate a class diagram
+Let's also generate a class diagram for our coworkers:
 ```shell
-python -m py-model --files models.py --output models.png
+py-model --files models.py --output models.png
 ```
 #TODO
 
@@ -52,9 +57,7 @@ Install py-model with your common package manager. For `pip` this would look lik
 ```shell
 pip install py-model
 ```
-
-## Command Line Interface (CLI)
-To be filled in...
+To get aqcuainted witht the command line interfacc run `py-model --help`.
 
 ## Supported Class Structures
 When parsing the structure of your python models regular classes and dataclasses are supported. However, if you also want to export your datatypes, then **only** annotated assignments will have a datatype, as an example
@@ -97,7 +100,7 @@ Following data types are supported, with their equivalent in the other languages
 - set 
 - class
 
-Also the union is supported (please rewrite `Optional[int]` to `int | None`). Any combination of supported datatypes does work, like
+Also the union is supported (please rewrite `Optional[int]` to `int | None`). Any combination of supported datatypes works, e.g.,
 ```python
 some_attribute: list[tuple[str, bool | int]]
 ```
@@ -116,6 +119,9 @@ Not implemented yet, but planned and listed in their order of planned implementa
 > "Never. Ever. Buy a tech prouct based on the promise of future software updates." - Marques Brownlee, around 2021
 
 Lucky you, it's open source... 👀 These are the planned features for future versions:
+## Parsing
+- Support for Django projects such that one could export the models and use them for their frotend as types
+
 ## Graphs
 ### Cardinality
 Additional cardsupport for class diagrams, where 
@@ -132,7 +138,7 @@ class Train:
     wagons: list[Wagon]
 ```
 which would result in something like:
-#TODO 
+#TODO ****
 
 ## Languages
 - Nested Classes: parsing them correctly etc.

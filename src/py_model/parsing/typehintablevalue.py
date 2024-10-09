@@ -1,14 +1,21 @@
-from abc import ABC
+from py_model.parsing import BuildingBlock
+from py_model.writing import SupportedTypes
 
-from py_model.datatypes.basic_types import DataType, Undefined
+from .type_hints.basic_types import TypeHint, Undefined
 
 
-class TypeHintableValue(ABC):
+class TypeHintableValue(BuildingBlock):
     """A class that can be used to represent a value that has a type hint, like an attribute or a parameter."""
 
-    def __init__(self, name: str, dtype: DataType) -> None:
+    def __init__(self, name: str, dtype: TypeHint) -> None:
         self.name = name
         self.dtype = dtype
+
+    def dot(self) -> str:
+        return f"{self.name}: {self.dtype}"
+
+    def typescript(self) -> str:
+        return f"{self.name}: {self.dtype.get_string(supported_type=SupportedTypes.ts)}"
 
     def __str__(self) -> str:
         if isinstance(self.dtype, Undefined):

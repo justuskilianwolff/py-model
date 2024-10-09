@@ -1,10 +1,11 @@
 import ast
 import os
 
-from py_model.datatypes import (
+from py_model.errors import MissingImplementationError
+from py_model.logging import get_logger
+from py_model.parsing.type_hints import (
     Boolean,
     CustomClass,
-    DataType,
     Dict,
     Float,
     Integer,
@@ -13,11 +14,10 @@ from py_model.datatypes import (
     Set,
     String,
     Tuple,
+    TypeHint,
     Undefined,
     Union,
 )
-from py_model.errors import MissingImplementationError
-from py_model.logging import get_logger
 
 logger = get_logger(__name__)
 
@@ -52,7 +52,7 @@ def determine_is_dataclass(class_def: ast.ClassDef) -> bool:
     return is_dataclass
 
 
-def handle_type_annotation(annotation) -> DataType:
+def handle_type_annotation(annotation) -> TypeHint:
     if annotation is None:
         # no return type specified: function():
         return Undefined()
@@ -67,11 +67,15 @@ def handle_type_annotation(annotation) -> DataType:
             "int": Integer(),
             "float": Float(),
             "str": String(),
+            "tuple": Tuple(),
+            "set": Set(),
+            "dict": Dict(),
         }
         try:
             return MATCHING[annotation.id]
         except KeyError:
             # if not in matching, it is a custom class
+            logger.warning(f"Setting a type hint: {annotation.id} must be a class")
             return CustomClass(name=annotation.id)
     elif isinstance(annotation, ast.Subscript):
         # nested datatype like list or tuple, e.g.: function() -> list[str]:
@@ -91,14 +95,14 @@ def handle_type_annotation(annotation) -> DataType:
         if isinstance(value, ast.Name):
             if value.id == "list":
                 # list Datatype, e.g.: function -> list[str]:
-                return List(dtypes=dtypes)
+                return List(dtype=dtypes)
             elif value.id == "tuple":
                 # tuple Datatype, e.g.: function -> tuple[str, int]:
                 return Tuple(dtypes=dtypes)
             elif value.id == "dict":
                 return Dict(dtypes=dtypes)
             elif value.id == "set":
-                return Set(dtypes=dtypes)
+                return Set(dtype=dtypes)
             else:
                 raise MissingImplementationError(f"Neither list nor tuple, not implemented for {value.id}.")
         else:
