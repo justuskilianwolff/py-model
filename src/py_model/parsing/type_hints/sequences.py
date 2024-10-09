@@ -40,9 +40,22 @@ class DoubleContainer(TypeHint, BuildingBlock):
             return f"{container}[{self.dtypes[0]}, {self.dtypes[1]}]"
 
 
-class Tuple(DoubleContainer):
+class MultipleContainer(TypeHint, BuildingBlock):
+    """Can hold many dtypes"""
+
+    def __init__(self, dtypes: list[TypeHint] | None = None) -> None:
+        self.dtypes = dtypes
+
+    def __str__(self) -> str:
+        container = self.__class__.__name__.lower()
+        if self.dtypes is None:
+            return container
+        else:
+            return f"{container}[{', '.join([str(dtype) for dtype in self.dtypes])}]"
+
+
+class Tuple(MultipleContainer):
     def typescript(self) -> str:
-        print(f'{self.dtypes}, {type(self.dtypes)}')
         if self.dtypes is None:
             raise ValueError("Tuple must have at least one type hint for conversion to Typescript.")
         else:
@@ -68,7 +81,7 @@ class Dict(DoubleContainer):
 class Set(SingleContainer):
     def typescript(self) -> str:
         if self.dtype is None:
-            raise ValueError("Dict must have type hints for conversion to Typescript.")
+            raise ValueError("Set must have type hints for conversion to Typescript.")
         else:
             return f"Set<{self.dtype.typescript()}>"
 

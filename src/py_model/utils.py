@@ -67,11 +67,15 @@ def handle_type_annotation(annotation) -> TypeHint:
             "int": Integer(),
             "float": Float(),
             "str": String(),
+            "tuple": Tuple(),
+            "set": Set(),
+            "dict": Dict(),
         }
         try:
             return MATCHING[annotation.id]
         except KeyError:
             # if not in matching, it is a custom class
+            logger.warning(f"Setting a type hint: {annotation.id} must be a class")
             return CustomClass(name=annotation.id)
     elif isinstance(annotation, ast.Subscript):
         # nested datatype like list or tuple, e.g.: function() -> list[str]:
