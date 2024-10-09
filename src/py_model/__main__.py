@@ -12,7 +12,11 @@ def main():
     # convert args to a dictionary
     args_dict = vars(args)
 
-    logger = get_logger(__name__, level="DEBUG")
+    # get verbosity level -> other loggers inherit from this one
+    if args_dict['verbose']:
+        logger = get_logger(__name__, level="INFO")
+    else:
+        logger = get_logger(__name__, level="WARNING")
 
     # get the file paths
     filepaths = get_filepath_set(dirs=args_dict.get("dirs"), files=args_dict.get("files"))
