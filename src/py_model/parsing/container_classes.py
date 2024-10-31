@@ -31,14 +31,14 @@ class Instance(BuildingBlock):
         return self.__str__()
 
     @classmethod
-    def get_functions_and_classes(cls, body) -> tuple[list[Function], list[Class]]:
+    def get_functions_and_classes(cls, body, needs_annotation: bool) -> tuple[list[Function], list[Class]]:
         functions = []
         classes = []
         for body_item in body:
             if isinstance(body_item, ast.FunctionDef):
-                functions.append(Function.from_ast(body_item))
+                functions.append(Function.from_ast(body_item, needs_annotation=needs_annotation))
             elif isinstance(body_item, ast.ClassDef):
-                classes.append(Class.from_ast(body_item))
+                classes.append(Class.from_ast(body_item, needs_annotation=needs_annotation))
 
         return functions, classes
 
@@ -59,13 +59,13 @@ class Function(Instance):
         self.classes: list[Class] = classes
 
     @classmethod
-    def from_ast(cls, fun: ast.FunctionDef):
+    def from_ast(cls, fun: ast.FunctionDef, needs_annotation: bool):
         name = fun.name
-        parameters = cls.get_parameters(fun.args.args)
+        parameters = cls.get_parameters(fun.args.args, needs_annotation=needs_annotation)
         return_type = cls.get_return_type(fun.returns)
 
         # generate lists of functions and classes
-        functions, classes = cls.get_functions_and_classes(fun.body)
+        functions, classes = cls.get_functions_and_classes(fun.body, needs_annotation=needs_annotation)
 
         return cls(name=name, parameters=parameters, return_type=return_type, functions=functions, classes=classes)
 
@@ -74,7 +74,7 @@ class Function(Instance):
         return handle_type_annotation(return_object)
 
     @classmethod
-    def get_parameters(cls, args):
+    def get_parameters(cls, args, needs_annotation: bool):
         parameters = []
         for arg in args:
             if arg.arg == "self":
@@ -82,7 +82,7 @@ class Function(Instance):
                 # DISCUSS: handle class functions in here?
                 continue
             else:
-                dtype = handle_type_annotation(arg.annotation)
+                dtype = handle_type_annotation(arg.annotation, needs_annotation=needs_annotation)
 
             parameter = Parameter(name=arg.arg, dtype=dtype)
             parameters.append(parameter)
@@ -131,12 +131,14 @@ class Class(Instance):
         self.classes: list[Class] = classes
 
     @classmethod
-    def from_ast(cls, class_def: ast.ClassDef) -> Class:
+    def from_ast(cls, class_def: ast.ClassDef, needs_annotation: bool) -> Class:
         name = class_def.name
         is_dataclass = determine_is_dataclass(class_def=class_def)
         inherits_from = cls.get_inheritance(class_def=class_def)
-        attributes, body = cls.get_attributes(class_def=class_def, is_dataclass=is_dataclass)
-        functions, classes = Instance.get_functions_and_classes(body)
+        attributes, body = cls.get_attributes(
+            class_def=class_def, is_dataclass=is_dataclass, needs_annotation=needs_annotation
+        )
+        functions, classes = Instance.get_functions_and_classes(body, needs_annotation=needs_annotation)
 
         return Class(
             name=name,
@@ -157,7 +159,9 @@ class Class(Instance):
         return inherits_from
 
     @classmethod
-    def get_attributes(cls, class_def: ast.ClassDef, is_dataclass: bool) -> tuple[Attributes, list]:
+    def get_attributes(
+        cls, class_def: ast.ClassDef, is_dataclass: bool, needs_annotation: bool
+    ) -> tuple[Attributes, list]:
         """Find attributes in constructor in a class.
 
         Args:
@@ -206,8 +210,14 @@ class Class(Instance):
 
             # handle assigns
             for node in general_assign_visitor.assigns:
-                attributes.add_attributes(attributes=Attribute.handle_assign(node))
-
+                if needs_annotation:
+                    raise ValueError("Annotation needed to obtain desired file format.")
+                else:
+                    attributes.add_attributes(
+                        attributes=Attribute.handle_assign(
+                            node,
+                        )
+                    )
         return attributes, body
 
     def __str__(self) -> str:

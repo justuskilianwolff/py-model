@@ -52,8 +52,10 @@ def determine_is_dataclass(class_def: ast.ClassDef) -> bool:
     return is_dataclass
 
 
-def handle_type_annotation(annotation) -> TypeHint:
+def handle_type_annotation(annotation, needs_annotation: bool) -> TypeHint:
     if annotation is None:
+        if needs_annotation:
+            raise ValueError("Needs annotaion for conversion")
         # no return type specified: function():
         return Undefined()
     elif isinstance(annotation, ast.Constant):

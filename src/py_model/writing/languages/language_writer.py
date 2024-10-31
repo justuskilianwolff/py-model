@@ -6,4 +6,5 @@ class LanguageWriter(Writer):
 
 
 class TypeScriptWriter(LanguageWriter):
-    pass
+    def __init__(self):
+        super().__init__(needs_annotation=True)

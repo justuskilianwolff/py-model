@@ -1,9 +1,8 @@
 import os
 
 from py_model.logging import get_logger
-from py_model.navigation import get_classes, get_filepath_set
+from py_model.navigation import get_filepath_set
 from py_model.parser import parser
-from py_model.parsing import Class
 from py_model.writing import SupportedTypes
 
 
@@ -13,23 +12,13 @@ def main():
     args_dict = vars(args)
 
     # get verbosity level -> other loggers inherit from this one
-    if args_dict['verbose']:
-        logger = get_logger(__name__, level="INFO")
+    if args_dict["verbose"]:
+        get_logger(__name__, level="INFO")
     else:
-        logger = get_logger(__name__, level="WARNING")
+        get_logger(__name__, level="WARNING")
 
     # get the file paths
     filepaths = get_filepath_set(dirs=args_dict.get("dirs"), files=args_dict.get("files"))
-
-    class_instances: list[Class] = list()
-
-    for filepath in sorted(filepaths):
-        classes = get_classes(filepath)
-
-        # create class instances
-        for cls in classes:
-            class_instance = Class.from_ast(cls)
-            class_instances.append(class_instance)
 
     # create the result string
     result = ""

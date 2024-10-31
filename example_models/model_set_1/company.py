@@ -18,5 +18,5 @@ class Company:
         print(f"{self.company_name} is being sold.")
         return (100.0, 10)
 
-    def sell_2(self) -> tuple:
-        return ()
+    def sell_2(self) -> tuple[int]:
+        return (5,)
